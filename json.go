@@ -1,9 +1,9 @@
 package main
 
 import (
-	"net/http"
 	"bytes"
-	"encoding/json"
+	"gopkg.in/mgo.v2/bson"
+	"net/http"
 )
 
 /*
@@ -14,19 +14,19 @@ import (
     "minTriggerValue": 1.50,
     "maxTriggerValue": 2.55
 }
+*/
+type Payload struct {
+	ID              bson.ObjectId `json:"id" bson:"_id"`
+	WebhookURL      string        `json:"webhookURL" bson:"webhookURL"`
+	BaseCurrency    string        `json:"baseCurrency" bson:"baseCurrency"`
+	TargetCurrency  string        `json:"targetCurrency" bson:"targetCurrency"`
+	MinTriggerValue float64       `json:"minTriggerValue" bson:"minTriggerValue"`
+	MaxTriggerValue float64       `json:"maxTriggerValue" bson:"maxTriggerValue"`
+}
 
- */
- type Payload struct{
- 	webhookURL string
- 	baseCurrency string
- 	targetCurrency string
- 	minTriggerValue json.Number
- 	maxTriggerValue json.Number
- }
-
-func sendDiscord(w http.ResponseWriter, r *http.Request){
-	var jsonStr = []byte(`{"content":"Fuck you."}`)
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+func sendDiscord(data []byte) {
+	//var jsonStr= []byte(`{"content":"Fuck you."}`)
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(data))
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
