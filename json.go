@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"bytes"
+	"encoding/json"
 )
 
 /*
@@ -15,8 +16,16 @@ import (
 }
 
  */
+ type Payload struct{
+ 	webhookURL string
+ 	baseCurrency string
+ 	targetCurrency string
+ 	minTriggerValue json.Number
+ 	maxTriggerValue json.Number
+ }
+
 func sendDiscord(w http.ResponseWriter, r *http.Request){
-	var jsonStr = []byte(`{"content":"Trondheim suger, hilsen golang."}`)
+	var jsonStr = []byte(`{"content":"Fuck you."}`)
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 
