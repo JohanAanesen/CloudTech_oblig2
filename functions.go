@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"gopkg.in/mgo.v2/bson"
 	"fmt"
+	"time"
 )
 
 var dbURL = "mongodb://johan:123@ds227035.mlab.com:27035/cloudtech2"
@@ -18,6 +19,64 @@ func databaseCon()(*mgo.Session){
 	session.SetMode(mgo.Monotonic, true)
 
 	return session
+}
+
+func getFixer(s1 string, s2 string) (float64, error) {
+
+	json1, err := http.Get("http://api.fixer.io/latest?base=" + s1) //+ "," + s2)
+	r := json1.Body
+	if err != nil {
+		fmt.Printf("fixer.io is not responding, %s\n", err)
+		return 0, err
+	}
+
+	//data object
+	var data Data
+
+	//json decoder
+	err = json.NewDecoder(r).Decode(&data)
+
+	//err handler
+	if err != nil {
+		fmt.Printf("shit, %s\n", err)
+		return 0, err
+	}
+
+	//number := data["rates"][s2].(float64)
+	number := data.Rates[s2]
+	return number, nil
+}
+
+func getFixerAverage(t time.Time, s1 string, s2 string) (float64) {
+	var total float64
+	timeCopy := t
+	for i := t.Day(); i > t.Day()-7; i--{
+		json1, err := http.Get("http://api.fixer.io/" + timeCopy.Format("2006-01-02") + "?base=" + s1) //+ "," + s2)
+		if err != nil {
+			fmt.Printf("fixer.io is not responding, %s\n", err)
+			return 0
+		}
+
+		timeCopy = timeCopy.AddDate(0,0,-1)
+
+		r := json1.Body
+
+		//data object
+		var data Data
+
+		//json decoder
+		err = json.NewDecoder(r).Decode(&data)
+
+		//err handler
+		if err != nil {
+			fmt.Printf("shit, %s\n", err)
+			return 0
+		}
+		total += data.Rates[s2]
+	}
+	//number := data["rates"][s2].(float64)
+	//number := data.Rates[s2]
+	return total/7
 }
 
 func HandlePost(w http.ResponseWriter, r *http.Request) {
@@ -114,5 +173,6 @@ func HandleInvoke(s string, w http.ResponseWriter, r *http.Request){
 		return
 	}
 	//fmt.Fprintf(w, "%s", test)
+	http.Header.Add(w.Header(), "content-type", "application/json")
 	json.NewEncoder(w).Encode(payload)
 }

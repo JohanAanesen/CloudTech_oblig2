@@ -32,6 +32,11 @@ type InvokedPayload struct{
 	MaxTriggerValue float64 `json:"maxTriggerValue" bson:"maxTriggerValue"`
 }
 
+type LatestPayload struct{
+	BaseCurrency string		`json:"baseCurrency" bson:"baseCurrency"`
+	TargetCurrency string 	`json:"targetCurrency" bson:"targetCurrency"`
+}
+
 func sendDiscord(data []byte) {
 	//var jsonStr= []byte(`{"content":"Fuck you."}`)
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(data))
