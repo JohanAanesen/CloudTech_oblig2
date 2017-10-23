@@ -1,19 +1,20 @@
 package main
 
 import (
-	"gopkg.in/mgo.v2"
-	"net/http"
 	"encoding/json"
-	"gopkg.in/mgo.v2/bson"
 	"fmt"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+	"net/http"
 	"time"
+	"bytes"
 )
 
 var dbURL = "mongodb://johan:123@ds227035.mlab.com:27035/cloudtech2"
 
-func databaseCon()(*mgo.Session){
+func databaseCon() *mgo.Session {
 	session, err := mgo.Dial(dbURL)
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 	session.SetMode(mgo.Monotonic, true)
@@ -47,36 +48,37 @@ func getFixer(s1 string, s2 string) (float64, error) {
 	return number, nil
 }
 
-func getFixerAverage(t time.Time, s1 string, s2 string) (float64) {
+func getFixerAverage(t time.Time, s1 string, s2 string) float64 {
 	var total float64
+	//creates copy of time
 	timeCopy := t
-	for i := t.Day(); i > t.Day()-7; i--{
-		json1, err := http.Get("http://api.fixer.io/" + timeCopy.Format("2006-01-02") + "?base=" + s1) //+ "," + s2)
+	//loops through 7 iterations
+	for i := t.Day(); i > t.Day()-7; i-- {
+		json1, err := http.Get("http://api.fixer.io/" + timeCopy.Format("2006-01-02") + "?base=" + s1)
 		if err != nil {
 			fmt.Printf("fixer.io is not responding, %s\n", err)
 			return 0
 		}
-
-		timeCopy = timeCopy.AddDate(0,0,-1)
-
-		r := json1.Body
+		//sets timecopy to yesterday
+		timeCopy = timeCopy.AddDate(0, 0, -1)
 
 		//data object
 		var data Data
 
+		r := json1.Body
+
 		//json decoder
 		err = json.NewDecoder(r).Decode(&data)
-
 		//err handler
 		if err != nil {
-			fmt.Printf("shit, %s\n", err)
+			fmt.Printf("Something went wrong decoding json from fixer.io: %s\n", err)
 			return 0
 		}
 		total += data.Rates[s2]
 	}
 	//number := data["rates"][s2].(float64)
 	//number := data.Rates[s2]
-	return total/7
+	return total / 7
 }
 
 func HandlePost(w http.ResponseWriter, r *http.Request) {
@@ -89,27 +91,28 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	///////////////////FIXER.IO///////////////////
-//	result, err := getFixer(payload.BaseCurrency, payload.TargetCurrency)
-//	if err != nil {
-//		http.Error(w, "Currency not found", http.StatusBadRequest)
-//	}
-//	fmt.Fprintf(w, "Currency ratio: %f\n" ,result)
+	//	result, err := getFixer(payload.BaseCurrency, payload.TargetCurrency)
+	//	if err != nil {
+	//		http.Error(w, "Currency not found", http.StatusBadRequest)
+	//	}
+	//	fmt.Fprintf(w, "Currency ratio: %f\n" ,result)
 
 	db := databaseCon()
 
 	payload.ID = bson.NewObjectId()
 
-	fmt.Fprintf(w, "%s", payload.ID.Hex())
-
 	test := db.DB("cloudtech2").C("webhooks").Insert(&payload)
-	if test != nil{
+	if test != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 	defer db.Close()
+
+
+	fmt.Fprintf(w, "%s", payload.ID.Hex())
 }
 
 func HandleGet(s string, w http.ResponseWriter, r *http.Request) {
-	if bson.IsObjectIdHex(s) == false{
+	if bson.IsObjectIdHex(s) == false {
 		http.Error(w, "Not a valid ID", http.StatusBadRequest)
 		return
 	}
@@ -119,23 +122,24 @@ func HandleGet(s string, w http.ResponseWriter, r *http.Request) {
 	var payload Payload
 
 	err := db.DB("cloudtech2").C("webhooks").FindId(bson.ObjectIdHex(s)).One(&payload)
-	if err != nil{
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer db.Close()
 
-//	payload.CurrentRate, err = getFixer(payload.BaseCurrency, payload.TargetCurrency)
-	if err != nil{
+	//	payload.CurrentRate, err = getFixer(payload.BaseCurrency, payload.TargetCurrency)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//fmt.Fprintf(w, "%s", test)
+
+	http.Header.Add(w.Header(), "content-type", "application/json")
 	json.NewEncoder(w).Encode(payload)
 }
 
-func HandleDelete(s string, w http.ResponseWriter, r *http.Request){
-	if bson.IsObjectIdHex(s) == false{
+func HandleDelete(s string, w http.ResponseWriter, r *http.Request) {
+	if bson.IsObjectIdHex(s) == false {
 		http.Error(w, "Not a valid ID", http.StatusBadRequest)
 		return
 	}
@@ -143,15 +147,15 @@ func HandleDelete(s string, w http.ResponseWriter, r *http.Request){
 	db := databaseCon()
 
 	err := db.DB("cloudtech2").C("webhooks").RemoveId(bson.ObjectIdHex(s))
-	if err != nil{
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	defer db.Close()
 }
 
-func HandleInvoke(s string, w http.ResponseWriter, r *http.Request){
-	if bson.IsObjectIdHex(s) == false{
+func HandleInvoke(s string, w http.ResponseWriter, r *http.Request) {
+	if bson.IsObjectIdHex(s) == false {
 		http.Error(w, "Not a valid ID", http.StatusBadRequest)
 		return
 	}
@@ -161,18 +165,33 @@ func HandleInvoke(s string, w http.ResponseWriter, r *http.Request){
 	var payload InvokedPayload
 
 	err := db.DB("cloudtech2").C("webhooks").FindId(bson.ObjectIdHex(s)).One(&payload)
-	if err != nil{
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer db.Close()
 
 	payload.CurrentRate, err = getFixer(payload.BaseCurrency, payload.TargetCurrency)
-	if err != nil{
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	//fmt.Fprintf(w, "%s", test)
 	http.Header.Add(w.Header(), "content-type", "application/json")
 	json.NewEncoder(w).Encode(payload)
+
+}
+
+func sendWebhook(url string, data []byte) {
+	//var jsonStr= []byte(`{"content":"Fuck you."}`)
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(data))
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
 }
