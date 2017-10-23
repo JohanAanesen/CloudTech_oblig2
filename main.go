@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"gopkg.in/mgo.v2/bson"
+	"strings"
 )
 
 //Data map
@@ -17,7 +17,7 @@ type Data struct {
 //Discord webhook
 //var url = "https://discordapp.com/api/webhooks/370393359900082200/_RASdjfNlTsFm9QMprDIFukfV05u7_vfN8nBjgoJ7y0_D_JmLXYdoWVbY8guoCkbOAVx"
 var url = "https://discordapp.com/api/webhooks/371707670832349187/dPg6uA7eJL1K0wPxtfyde1ZQu_6LoC_O_SOqrQJ5b_VqcxpfsnGHE4TYKrNz95sAXW3o"
-
+//var url = "https://hooks.slack.com/services/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"
 func getFixer(s1 string, s2 string) (float64, error) {
 
 	json1, err := http.Get("http://api.fixer.io/latest?base=" + s1) //+ "," + s2)
@@ -59,35 +59,6 @@ func HandleExchange(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func HandlePost(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var payload Payload
-	err := decoder.Decode(&payload)
-	if err != nil {
-		http.Error(w, "Something went wrong", http.StatusInternalServerError)
-	}
-	defer r.Body.Close()
-
-	///////////////////FIXER.IO///////////////////
-	result, err := getFixer(payload.BaseCurrency, payload.TargetCurrency)
-	if err != nil {
-		http.Error(w, "Currency not found", http.StatusBadRequest)
-	}
-	fmt.Fprintf(w, "Currency ratio: %f\n" ,result)
-
-	db := databaseCon()
-
-	payload.ID = bson.NewObjectId()
-
-	fmt.Fprintf(w, "Webhook ID:\t%s\n", payload.ID.Hex())
-
-	test := db.DB("cloudtech2").C("webhooks").Insert(&payload)
-	if test != nil{
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-
-	db.Close()
-}
 
 func HandleDiscord(w http.ResponseWriter, r *http.Request) {
 	type data1 struct {
@@ -105,11 +76,31 @@ func HandleDiscord(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func HandleMain(w http.ResponseWriter, r *http.Request){
+	URL := strings.Split(r.URL.Path, "/")
+//	if URL[1] != ""{
+//		HandleInvoke(URL[1],w, r)
+//	}else {
+
+		switch r.Method {
+		case "GET":
+			HandleGet(URL[1], w, r)
+		case "POST":
+			HandlePost(w, r)
+		case "DELETE":
+			HandleDelete(URL[1], w, r)
+		default:
+			http.Error(w, "Not supported", http.StatusMethodNotAllowed)
+		}
+//	}
+}
+
 func main() {
 
-	http.HandleFunc("/exchange", HandleExchange)
+//	http.HandleFunc("/exchange", HandleExchange)
 	http.HandleFunc("/discord", HandleDiscord)
-	http.HandleFunc("/post", HandlePost)
+//	http.HandleFunc("/post", HandlePost)
+	http.HandleFunc("/", HandleMain)
 
 	//port := os.Getenv("PORT")
 	//http.ListenAndServe(":"+port, nil)
