@@ -68,6 +68,8 @@ func HandleLatest(w http.ResponseWriter, r *http.Request) {
 
 		http.Header.Add(w.Header(), "content-type", "application/json")
 		fmt.Fprintf(w, "%v", value)
+	}else{
+		http.Error(w, "Request method unsupported", http.StatusBadRequest)
 	}
 }
 //WORKS
@@ -94,12 +96,18 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request){
 }
 
 func main() {
+	////////////NEEDS ITS OWN WORKER////////////
+/*	for range time.NewTicker(24 * time.Second).C {
+		updateCurrencies()
+	}*/
 
 	http.HandleFunc("/discord", HandleDiscord)
 	http.HandleFunc("/", HandleMain)
 	http.HandleFunc("/latest", HandleLatest)
 	http.HandleFunc("/average", HandleAverage)
 	http.HandleFunc("/evaluationtriggger", HandleEvaluation)
+
+
 
 	//port := os.Getenv("PORT")
 	//http.ListenAndServe(":"+port, nil)

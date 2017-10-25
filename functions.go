@@ -36,9 +36,7 @@ func getFixer(s1 string, s2 string) (float64, error) {
 
 	//json decoder
 	err = json.NewDecoder(r).Decode(&data)
-
-	//err handler
-	if err != nil {
+	if err != nil { //err handler
 		fmt.Printf("shit, %s\n", err)
 		return 0, err
 	}
@@ -95,7 +93,11 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 	//	if err != nil {
 	//		http.Error(w, "Currency not found", http.StatusBadRequest)
 	//	}
-	//	fmt.Fprintf(w, "Currency ratio: %f\n" ,result)
+	payload.CurrentRate, err = getFixer(payload.BaseCurrency, payload.TargetCurrency)
+	if err != nil{
+		http.Error(w, "Currency not found", http.StatusBadRequest)
+		return
+	}
 
 	db := databaseCon()
 
@@ -106,7 +108,6 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 	defer db.Close()
-
 
 	fmt.Fprintf(w, "%s", payload.ID.Hex())
 }
@@ -194,4 +195,36 @@ func sendWebhook(url string, data []byte) {
 		panic(err)
 	}
 	defer resp.Body.Close()
+}
+
+func updateCurrencies(){
+	db := databaseCon()
+	defer db.Close()
+	c := db.DB("cloudtech2").C("webhooks")
+	count, _ := c.Count()
+
+	var payload []Payload
+
+	err := c.Find(nil).All(&payload)
+	if err != nil {
+		fmt.Printf("It's fucked: %s\n", err)
+		return
+	}
+
+	for i := 0; i < count; i++{
+		newValue, err := getFixer(payload[i].BaseCurrency, payload[i].TargetCurrency)
+		if err != nil{
+			fmt.Printf("It's fucked: %s\n", err)
+			break
+		}
+		payload[i].CurrentRate = newValue
+
+		//c.UpdateId(bson.ObjectIdHex(payload[i].ID), ).
+		err = c.UpdateId(payload[i].ID, payload[i])
+		if err != nil{
+			fmt.Printf("It's fucked: %s\n", err)
+			break
+		}
+		fmt.Printf("Updated ID: %v\n", payload[i].ID.Hex())
+	}
 }
