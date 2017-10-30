@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-
-
 //Discord webhook
 //var url = "https://discordapp.com/api/webhooks/370393359900082200/_RASdjfNlTsFm9QMprDIFukfV05u7_vfN8nBjgoJ7y0_D_JmLXYdoWVbY8guoCkbOAVx"
 //Discord webhook
@@ -17,7 +15,7 @@ var url = "https://discordapp.com/api/webhooks/371707670832349187/dPg6uA7eJL1K0w
 //Slack webhook
 //var url = "https://hooks.slack.com/services/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"
 
-
+//to be removed
 func HandleDiscord(w http.ResponseWriter, r *http.Request) {
 	type data1 struct {
 		Content string `json:"content"`
@@ -34,6 +32,7 @@ func HandleDiscord(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//WORKS
 func HandleMain(w http.ResponseWriter, r *http.Request) {
 	URL := strings.Split(r.URL.Path, "/")
 
@@ -92,11 +91,68 @@ func HandleAverage(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleEvaluation(w http.ResponseWriter, r *http.Request){
-	fmt.Fprint(w,"fuck off m8")
+//	fmt.Fprint(w,"fuck off m8")
+//	updateCurrencies(w)
+
+	db := databaseCon()
+	defer db.Close()
+	c := db.DB("cloudtech2").C("webhooks")
+	count, _ := c.Count()
+
+	var payload []Payload
+
+	err := c.Find(nil).All(&payload)
+	if err != nil {
+		fmt.Printf("It's fucked: %s\n", err)
+		return
+	}
+
+	for i := 0; i < count; i++{
+		if payload[i].CurrentRate <= payload[i].MinTriggerValue{
+			//Send webhook mintrigger
+			var webhookPay InvokedPayload
+
+			webhookPay.BaseCurrency = payload[i].BaseCurrency
+			webhookPay.TargetCurrency = payload[i].TargetCurrency
+			webhookPay.CurrentRate = payload[i].CurrentRate
+			webhookPay.MinTriggerValue = payload[i].MinTriggerValue
+			webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
+
+			b, err := json.Marshal(webhookPay)
+			if err != nil{
+				fmt.Printf("Json encoding went to shit: %s\n", err)
+				return
+			}
+			sendWebhook(payload[i].WebhookURL, b)
+
+		}else if payload[i].CurrentRate >= payload[i].MaxTriggerValue{
+			//Send webhook maxtrigger
+			var webhookPay InvokedPayload
+
+			webhookPay.BaseCurrency = payload[i].BaseCurrency
+			webhookPay.TargetCurrency = payload[i].TargetCurrency
+			webhookPay.CurrentRate = payload[i].CurrentRate
+			webhookPay.MinTriggerValue = payload[i].MinTriggerValue
+			webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
+
+			b, err := json.Marshal(webhookPay)
+			if err != nil{
+				fmt.Printf("Json encoding went to shit: %s\n", err)
+				return
+			}
+			sendWebhook(payload[i].WebhookURL, b)
+		}else{
+			//Don't send webhook? dunno
+			var jsonStr= []byte(`{"content":"Within margins"}`)
+			sendWebhook(url, jsonStr)
+		}
+
+	}
+
 }
 
 func main() {
-	////////////NEEDS ITS OWN WORKER////////////
+	////////////NEED TO FIGURE THIS ONE OUT////////////
 /*	for range time.NewTicker(24 * time.Second).C {
 		updateCurrencies()
 	}*/
@@ -105,7 +161,7 @@ func main() {
 	http.HandleFunc("/", HandleMain)
 	http.HandleFunc("/latest", HandleLatest)
 	http.HandleFunc("/average", HandleAverage)
-	http.HandleFunc("/evaluationtriggger", HandleEvaluation)
+	http.HandleFunc("/evaluationtrigger", HandleEvaluation)
 
 
 

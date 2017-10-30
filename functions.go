@@ -25,7 +25,6 @@ func databaseCon() *mgo.Session {
 func getFixer(s1 string, s2 string) (float64, error) {
 
 	json1, err := http.Get("http://api.fixer.io/latest?base=" + s1) //+ "," + s2)
-	r := json1.Body
 	if err != nil {
 		fmt.Printf("fixer.io is not responding, %s\n", err)
 		return 0, err
@@ -35,7 +34,7 @@ func getFixer(s1 string, s2 string) (float64, error) {
 	var data Data
 
 	//json decoder
-	err = json.NewDecoder(r).Decode(&data)
+	err = json.NewDecoder(json1.Body).Decode(&data)
 	if err != nil { //err handler
 		fmt.Printf("shit, %s\n", err)
 		return 0, err
@@ -53,6 +52,7 @@ func getFixerAverage(t time.Time, s1 string, s2 string) float64 {
 	//loops through 7 iterations
 	for i := t.Day(); i > t.Day()-7; i-- {
 		json1, err := http.Get("http://api.fixer.io/" + timeCopy.Format("2006-01-02") + "?base=" + s1)
+		//err handler
 		if err != nil {
 			fmt.Printf("fixer.io is not responding, %s\n", err)
 			return 0
@@ -63,10 +63,8 @@ func getFixerAverage(t time.Time, s1 string, s2 string) float64 {
 		//data object
 		var data Data
 
-		r := json1.Body
-
 		//json decoder
-		err = json.NewDecoder(r).Decode(&data)
+		err = json.NewDecoder(json1.Body).Decode(&data)
 		//err handler
 		if err != nil {
 			fmt.Printf("Something went wrong decoding json from fixer.io: %s\n", err)
@@ -74,8 +72,7 @@ func getFixerAverage(t time.Time, s1 string, s2 string) float64 {
 		}
 		total += data.Rates[s2]
 	}
-	//number := data["rates"][s2].(float64)
-	//number := data.Rates[s2]
+
 	return total / 7
 }
 
@@ -162,7 +159,7 @@ func HandleInvoke(s string, w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := databaseCon()
-
+	defer db.Close()
 	var payload InvokedPayload
 
 	err := db.DB("cloudtech2").C("webhooks").FindId(bson.ObjectIdHex(s)).One(&payload)
@@ -170,7 +167,6 @@ func HandleInvoke(s string, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer db.Close()
 
 	payload.CurrentRate, err = getFixer(payload.BaseCurrency, payload.TargetCurrency)
 	if err != nil {
@@ -184,8 +180,9 @@ func HandleInvoke(s string, w http.ResponseWriter, r *http.Request) {
 }
 
 func sendWebhook(url string, data []byte) {
-	//var jsonStr= []byte(`{"content":"Fuck you."}`)
+	//var jsonStr= []byte(`{"content":"shit"}`)
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(data))
+//	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 
 	req.Header.Set("Content-Type", "application/json")
 
@@ -197,7 +194,7 @@ func sendWebhook(url string, data []byte) {
 	defer resp.Body.Close()
 }
 
-func updateCurrencies(){
+func updateCurrencies(w http.ResponseWriter){
 	db := databaseCon()
 	defer db.Close()
 	c := db.DB("cloudtech2").C("webhooks")
@@ -219,12 +216,11 @@ func updateCurrencies(){
 		}
 		payload[i].CurrentRate = newValue
 
-		//c.UpdateId(bson.ObjectIdHex(payload[i].ID), ).
 		err = c.UpdateId(payload[i].ID, payload[i])
 		if err != nil{
 			fmt.Printf("It's fucked: %s\n", err)
 			break
 		}
-		fmt.Printf("Updated ID: %v\n", payload[i].ID.Hex())
+		fmt.Fprintf(w,"Updated ID: %v\n %s\n", payload[i].ID.Hex(), http.StatusOK)
 	}
 }
