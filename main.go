@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 )
 
 //Discord webhook
@@ -14,23 +13,6 @@ import (
 var url = "https://discordapp.com/api/webhooks/371707670832349187/dPg6uA7eJL1K0wPxtfyde1ZQu_6LoC_O_SOqrQJ5b_VqcxpfsnGHE4TYKrNz95sAXW3o"
 //Slack webhook
 //var url = "https://hooks.slack.com/services/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"
-
-//to be removed
-func HandleDiscord(w http.ResponseWriter, r *http.Request) {
-	type data1 struct {
-		Content string `json:"content"`
-	}
-	var data data1
-	data.Content = "jørg1 er k00l"
-
-	b, err := json.Marshal(data)
-	if err != nil {
-		fmt.Fprintf(w, "sheeet %s\n", err)
-	}
-
-	sendWebhook(url, b)
-
-}
 
 //WORKS
 func HandleMain(w http.ResponseWriter, r *http.Request) {
@@ -59,11 +41,12 @@ func HandleLatest(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Somethings wrong: %s\n", http.StatusBadRequest)
 			return
 		}
-		value, err := getFixer(data.BaseCurrency, data.TargetCurrency)
+		/*value, err := getFixer(data.BaseCurrency, data.TargetCurrency)
 		if err != nil {
 			http.Error(w, "Somethings wrong: %s\n", http.StatusBadRequest)
 			return
-		}
+		}*/
+		value := ReadLatest(data.TargetCurrency)
 
 		http.Header.Add(w.Header(), "content-type", "application/json")
 		fmt.Fprintf(w, "%v", value)
@@ -73,7 +56,7 @@ func HandleLatest(w http.ResponseWriter, r *http.Request) {
 }
 //WORKS
 func HandleAverage(w http.ResponseWriter, r *http.Request) {
-	current_time := time.Now().Local()
+	//current_time := time.Now().Local()
 	if r.Method == "POST" {
 		var data LatestPayload
 
@@ -83,8 +66,8 @@ func HandleAverage(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Somethings wrong: %s\n", http.StatusBadRequest)
 			return
 		}
-		value := getFixerAverage(current_time, data.BaseCurrency, data.TargetCurrency)
-
+		//value := getFixerAverage(current_time, data.BaseCurrency, data.TargetCurrency)
+		value := ReadAverage(data.TargetCurrency)
 		http.Header.Add(w.Header(), "content-type", "application/json")
 		fmt.Fprintf(w, "%v", value)
 	}
@@ -94,7 +77,7 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request){
 //	fmt.Fprint(w,"fuck off m8")
 //	updateCurrencies(w)
 
-	db := databaseCon()
+	db := DatabaseCon()
 	defer db.Close()
 	c := db.DB("cloudtech2").C("webhooks")
 	count, _ := c.Count()
@@ -124,7 +107,6 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request){
 				return
 			}
 			sendWebhook(payload[i].WebhookURL, b)
-
 		}else if payload[i].CurrentRate >= payload[i].MaxTriggerValue{
 			//Send webhook maxtrigger
 			var webhookPay InvokedPayload
@@ -141,15 +123,20 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request){
 				return
 			}
 			sendWebhook(payload[i].WebhookURL, b)
-		}else{
+
+		}/*else{
 			//Don't send webhook? dunno
 			var jsonStr= []byte(`{"content":"Within margins"}`)
 			sendWebhook(url, jsonStr)
-		}
+			w.WriteHeader(http.StatusOK)
+		}*/
 
 	}
 
+	w.WriteHeader(http.StatusOK)
+
 }
+
 
 func main() {
 	////////////NEED TO FIGURE THIS ONE OUT////////////
@@ -157,12 +144,10 @@ func main() {
 		updateCurrencies()
 	}*/
 
-	http.HandleFunc("/discord", HandleDiscord)
 	http.HandleFunc("/", HandleMain)
 	http.HandleFunc("/latest", HandleLatest)
 	http.HandleFunc("/average", HandleAverage)
 	http.HandleFunc("/evaluationtrigger", HandleEvaluation)
-
 
 
 	//port := os.Getenv("PORT")

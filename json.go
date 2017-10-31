@@ -15,9 +15,9 @@ import (
 */
 //Data struct
 type Data struct {
-	Base  string 				`json:"base"`
-	Date  string 				`json:"date"`
-	Rates map[string]float64 	`json:"rates"`
+	Base  string 				`json:"base" bson:"base"`
+	Date  string 				`json:"date" bson:"date"`
+	Rates map[string]float64 	`json:"rates" bson:"rates"`
 }
 
 type Payload struct {
