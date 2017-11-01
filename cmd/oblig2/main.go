@@ -3,6 +3,7 @@ package oblig2
 import (
 	"net/http"
 	"strings"
+	"github.com/JohanAAnesen/CloudTech_oblig2/handlers"
 )
 
 //Discord webhook
@@ -18,11 +19,11 @@ func HandleMain(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "GET":
-		HandleGet(URL[1], w, r)
+		handlers.HandleGet(URL[1], w, r)
 	case "POST":
-		HandlePost(w, r)
+		handlers.HandlePost(w, r)
 	case "DELETE":
-		HandleDelete(URL[1], w, r)
+		handlers.HandleDelete(URL[1], w, r)
 	default:
 		http.Error(w, "Request not supported.", http.StatusNotImplemented)
 	}
@@ -35,9 +36,9 @@ func main() {
 	}*/
 
 	http.HandleFunc("/", HandleMain)
-	http.HandleFunc("/latest", HandleLatest)
-	http.HandleFunc("/average", HandleAverage)
-	http.HandleFunc("/evaluationtrigger", HandleEvaluation)
+	http.HandleFunc("/latest", handlers.HandleLatest)
+	http.HandleFunc("/average", handlers.HandleAverage)
+	http.HandleFunc("/evaluationtrigger", handlers.HandleEvaluation)
 
 
 	//port := os.Getenv("PORT")

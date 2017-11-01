@@ -3,6 +3,7 @@ package mongodb
 import (
 	"gopkg.in/mgo.v2"
 	"fmt"
+	"github.com/JohanAAnesen/CloudTech_oblig2/handlers"
 )
 
 var dbURL = "mongodb://johan:123@ds227035.mlab.com:27035/cloudtech2"
@@ -17,7 +18,7 @@ func DatabaseCon() *mgo.Session {
 	return session
 }
 
-func SaveData(data Data){
+func SaveData(data handlers.Data){
 	db := DatabaseCon()
 	defer db.Close()
 	c := db.DB("cloudtech2").C("fixer")
@@ -34,7 +35,7 @@ func ReadLatest(s string)float64{
 	c := db.DB("cloudtech2").C("fixer")
 	dbSize, _ := c.Count()
 
-	var data Data
+	var data handlers.Data
 
 	err :=  c.Find(nil).Skip(dbSize-1).One(&data)
 	if err != nil{
@@ -50,9 +51,9 @@ func ReadAverage(s string)float64{
 	c := db.DB("cloudtech2").C("fixer")
 	dbSize, _ := c.Count()
 
-	var data1 Data
-	var data2 Data
-	var data3 Data
+	var data1 handlers.Data
+	var data2 handlers.Data
+	var data3 handlers.Data
 	var average float64
 
 	err :=  c.Find(nil).Skip(dbSize-1).One(&data1)
