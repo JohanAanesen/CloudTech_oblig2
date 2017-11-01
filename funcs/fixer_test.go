@@ -1,10 +1,10 @@
 package funcs
 
 import (
-	"testing"
 	"fmt"
-	"time"
 	"gopkg.in/mgo.v2/bson"
+	"testing"
+	"time"
 )
 
 func TestGetFixer(t *testing.T) {
@@ -20,16 +20,15 @@ func TestGetFixer(t *testing.T) {
 
 	var data Data
 
-	err :=  c.Find(nil).Skip(dbSize-1).One(&data)
-	if err != nil{
+	err := c.Find(nil).Skip(dbSize - 1).One(&data)
+	if err != nil {
 		fmt.Errorf("something went wrong reading mongodb: %s", err)
 	}
 
 	testValue := data.Date
 	//testValue2 := ReadLatest(out[1])
 
-
-	if testValue != timeTest{
+	if testValue != timeTest {
 		t.Fatalf("ERROR expected: %s but got: %s", timeTest, testValue)
 	}
 
@@ -37,6 +36,7 @@ func TestGetFixer(t *testing.T) {
 	c.Remove(bson.M{"date": timeTest})
 
 }
+
 /*
 func TestGetFixerAverage(t *testing.T) {
 	testTime := time.Now()

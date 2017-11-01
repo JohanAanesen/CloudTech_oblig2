@@ -1,20 +1,20 @@
 package funcs
 
 import (
-	"testing"
+	"bytes"
+	"encoding/json"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"net/http/httptest"
-	"encoding/json"
-	"bytes"
 	"strconv"
+	"testing"
 )
 
 func TestHandleDelete(t *testing.T) {
 
-	type testLoad struct{
-		ID		bson.ObjectId 	`json:"id" bson:"_id"`
-		Base  	string 			`json:"base" bson:"base"`
+	type testLoad struct {
+		ID   bson.ObjectId `json:"id" bson:"_id"`
+		Base string        `json:"base" bson:"base"`
 	}
 
 	var payload testLoad
@@ -28,14 +28,13 @@ func TestHandleDelete(t *testing.T) {
 
 	c.Insert(&payload)
 
-	req, err := http.NewRequest("DELETE", "/" + payload.ID.Hex(), nil)
+	req, err := http.NewRequest("DELETE", "/"+payload.ID.Hex(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	httpTest := httptest.NewRecorder()
 	handler := http.HandlerFunc(HandleMain)
-
 
 	handler.ServeHTTP(httpTest, req)
 
@@ -54,7 +53,7 @@ func TestHandleGet(t *testing.T) {
 	testTarget := "NOK"
 
 	//sends known webhook id
-	req, err := http.NewRequest("GET", "/" + testID, nil)
+	req, err := http.NewRequest("GET", "/"+testID, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -69,10 +68,10 @@ func TestHandleGet(t *testing.T) {
 		t.Errorf("Something wrong with json decoder: %s", err)
 	}
 
-	if testLoad.BaseCurrency != testBase{
+	if testLoad.BaseCurrency != testBase {
 		t.Fatalf("ERROR expected: %s but got: %s", testBase, testLoad.BaseCurrency)
 	}
-	if testLoad.TargetCurrency != testTarget{
+	if testLoad.TargetCurrency != testTarget {
 		t.Fatalf("ERROR expected: %s but got: %s", testTarget, testLoad.TargetCurrency)
 	}
 
@@ -102,7 +101,7 @@ func TestHandleLatest(t *testing.T) {
 	string1 := httpTest.Body.String()
 	responseValue, _ := strconv.ParseFloat(string1, 64)
 
-	if testValue != responseValue{
+	if testValue != responseValue {
 		t.Fatalf("ERROR expected: %s but got: %s", testValue, responseValue)
 	}
 }
@@ -131,7 +130,7 @@ func TestHandleAverage(t *testing.T) {
 	string1 := httpTest.Body.String()
 	responseValue, _ := strconv.ParseFloat(string1, 64)
 
-	if testValue != responseValue{
+	if testValue != responseValue {
 		t.Fatalf("ERROR expected: %s but got: %s", testValue, responseValue)
 	}
 }
@@ -144,7 +143,6 @@ func TestHandlePost(t *testing.T) {
 	testPay.TargetCurrency = "NOK"
 	testPay.MinTriggerValue = 1
 	testPay.MaxTriggerValue = 1337
-
 
 	json1, _ := json.Marshal(testPay)
 	reader := bytes.NewReader(json1)
@@ -159,15 +157,13 @@ func TestHandlePost(t *testing.T) {
 
 	handler.ServeHTTP(httpTest, req)
 
-
 	db := DatabaseCon()
 	defer db.Close()
 	c := db.DB("cloudtech2").C("webhooks")
 	dbSize, _ := c.Count()
 
 	var testData Payload
-	c.Find(nil).Skip(dbSize-1).One(&testData)
-
+	c.Find(nil).Skip(dbSize - 1).One(&testData)
 
 	if testPay.WebhookURL != testData.WebhookURL {
 		t.Errorf("ERROR: got %v want %v", testData.WebhookURL, testPay.WebhookURL)
@@ -195,7 +191,6 @@ func TestHandlePost2(t *testing.T) {
 	testPay.MinTriggerValue = 1
 	testPay.MaxTriggerValue = 1337
 
-
 	json1, _ := json.Marshal(testPay)
 	reader := bytes.NewReader(json1)
 
@@ -215,4 +210,3 @@ func TestHandlePost2(t *testing.T) {
 	}
 
 }
-

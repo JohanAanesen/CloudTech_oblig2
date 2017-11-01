@@ -1,8 +1,8 @@
 package oblig2
 
 import (
-	"net/http"
 	"github.com/JohanAanesen/CloudTech_oblig2/funcs"
+	"net/http"
 )
 
 //Discord webhook
@@ -14,7 +14,7 @@ import (
 
 func main() {
 	////////////NEED TO FIGURE THIS ONE OUT////////////
-/*	for range time.NewTicker(24 * time.Second).C {
+	/*	for range time.NewTicker(24 * time.Second).C {
 		updateCurrencies()
 	}*/
 
@@ -22,7 +22,6 @@ func main() {
 	http.HandleFunc("/latest", funcs.HandleLatest)
 	http.HandleFunc("/average", funcs.HandleAverage)
 	http.HandleFunc("/evaluationtrigger", funcs.HandleEvaluation)
-
 
 	//port := os.Getenv("PORT")
 	//http.ListenAndServe(":"+port, nil)

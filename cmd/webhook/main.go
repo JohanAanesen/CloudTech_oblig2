@@ -1,9 +1,10 @@
 package main
 
 import (
-	"time"
 	"github.com/JohanAanesen/CloudTech_oblig2/funcs"
+	"time"
 )
+
 func main() {
 	for {
 		//text := "Heroku timer test at: " + time.Now().String()

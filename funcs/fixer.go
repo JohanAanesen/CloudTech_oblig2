@@ -1,13 +1,12 @@
 package funcs
 
 import (
-	"net/http"
-	"fmt"
 	"encoding/json"
-
+	"fmt"
+	"net/http"
 )
 
-func GetFixer(s1 string){//, s2 string)(float64, error) {
+func GetFixer(s1 string) { //, s2 string)(float64, error) {
 
 	json1, err := http.Get("http://api.fixer.io/latest?base=" + s1) //+ "," + s2)
 	if err != nil {
@@ -28,8 +27,9 @@ func GetFixer(s1 string){//, s2 string)(float64, error) {
 	//Storing data in db
 	SaveData(data)
 
-//	return data.Rates[s2], nil
+	//	return data.Rates[s2], nil
 }
+
 /*
 func GetFixerAverage(t time.Time, s1 string, s2 string) float64 {
 	var total float64

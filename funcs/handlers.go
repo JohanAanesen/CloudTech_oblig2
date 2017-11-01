@@ -1,12 +1,12 @@
 package funcs
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
-	"net/http"
-	"bytes"
 	"io/ioutil"
+	"net/http"
 	"strings"
 )
 
@@ -36,14 +36,14 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	if payload.BaseCurrency != "EUR"{
+	if payload.BaseCurrency != "EUR" {
 		http.Error(w, "Not implemented", http.StatusNotImplemented)
 		return
 	}
 
 	//payload.CurrentRate, err = getFixer(payload.BaseCurrency, payload.TargetCurrency)
 	payload.CurrentRate = ReadLatest(payload.TargetCurrency)
-	if err != nil{
+	if err != nil {
 		http.Error(w, "Currency not found", http.StatusBadRequest)
 		return
 	}
@@ -120,7 +120,7 @@ func HandleLatest(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Somethings wrong: %s\n", http.StatusBadRequest)
 			return
 		}
-		if data.BaseCurrency != "EUR"{
+		if data.BaseCurrency != "EUR" {
 			http.Error(w, "Not implemented: %s\n", http.StatusNotImplemented)
 			return
 		}
@@ -129,10 +129,11 @@ func HandleLatest(w http.ResponseWriter, r *http.Request) {
 
 		http.Header.Add(w.Header(), "content-type", "application/json")
 		fmt.Fprintf(w, "%v", value)
-	}else{
+	} else {
 		http.Error(w, "Request method unsupported", http.StatusBadRequest)
 	}
 }
+
 //WORKS
 func HandleAverage(w http.ResponseWriter, r *http.Request) {
 	//current_time := time.Now().Local()
@@ -146,7 +147,7 @@ func HandleAverage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if data.BaseCurrency != "EUR"{
+		if data.BaseCurrency != "EUR" {
 			http.Error(w, "Not implemented: %s\n", http.StatusNotImplemented)
 			return
 		}
@@ -158,7 +159,7 @@ func HandleAverage(w http.ResponseWriter, r *http.Request) {
 }
 
 //WORKS
-func HandleEvaluation(w http.ResponseWriter, r *http.Request){
+func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 	//	fmt.Fprint(w,"fuck off m8")
 	//	updateCurrencies(w)
 
@@ -175,8 +176,8 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	for i := 0; i < count; i++{
-		if payload[i].CurrentRate <= payload[i].MinTriggerValue{
+	for i := 0; i < count; i++ {
+		if payload[i].CurrentRate <= payload[i].MinTriggerValue {
 			//Send webhook mintrigger
 			var webhookPay InvokedPayload
 
@@ -187,12 +188,12 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request){
 			webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
 
 			b, err := json.Marshal(webhookPay)
-			if err != nil{
+			if err != nil {
 				fmt.Printf("Json encoding went to shit: %s\n", err)
 				return
 			}
 			SendWebhook(payload[i].WebhookURL, b)
-		}else if payload[i].CurrentRate >= payload[i].MaxTriggerValue{
+		} else if payload[i].CurrentRate >= payload[i].MaxTriggerValue {
 			//Send webhook maxtrigger
 			var webhookPay InvokedPayload
 
@@ -203,13 +204,13 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request){
 			webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
 
 			b, err := json.Marshal(webhookPay)
-			if err != nil{
+			if err != nil {
 				fmt.Printf("Json encoding went to shit: %s\n", err)
 				return
 			}
 			SendWebhook(payload[i].WebhookURL, b)
 
-		}/*else{
+		} /*else{
 			//Don't send webhook? dunno
 			var jsonStr= []byte(`{"content":"Within margins"}`)
 			sendWebhook(url, jsonStr)
@@ -226,7 +227,7 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request){
 func SendWebhook(url string, data []byte) {
 	//var jsonStr= []byte(`{"content":"shit"}`)
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
-//	req, _ := http.Post(url, "application/json", bytes.NewBuffer(jsonStr))
+	//	req, _ := http.Post(url, "application/json", bytes.NewBuffer(jsonStr))
 
 	if err != nil {
 		fmt.Println(err)
@@ -236,7 +237,7 @@ func SendWebhook(url string, data []byte) {
 }
 
 //NOT TESTED
-func UpdateCurrencies(){
+func UpdateCurrencies() {
 
 	GetFixer("EUR")
 
@@ -253,21 +254,21 @@ func UpdateCurrencies(){
 		return
 	}
 
-	for i := 0; i < count; i++{
+	for i := 0; i < count; i++ {
 		//newValue, err := GetFixer(payload[i].BaseCurrency, payload[i].TargetCurrency)
 		newValue := ReadLatest(payload[i].TargetCurrency)
-		if err != nil{
+		if err != nil {
 			fmt.Printf("Error: %s\n", err)
 			break
 		}
 		payload[i].CurrentRate = newValue
 
 		err = c.UpdateId(payload[i].ID, payload[i])
-		if err != nil{
+		if err != nil {
 			fmt.Printf("Error: %s\n", err)
 			break
 		}
-		if payload[i].CurrentRate <= payload[i].MinTriggerValue{
+		if payload[i].CurrentRate <= payload[i].MinTriggerValue {
 			//Send webhook mintrigger
 			var webhookPay InvokedPayload
 
@@ -278,12 +279,12 @@ func UpdateCurrencies(){
 			webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
 
 			b, err := json.Marshal(webhookPay)
-			if err != nil{
+			if err != nil {
 				fmt.Printf("Json encoding error: %s\n", err)
 				return
 			}
 			SendWebhook(payload[i].WebhookURL, b)
-		}else if payload[i].CurrentRate >= payload[i].MaxTriggerValue{
+		} else if payload[i].CurrentRate >= payload[i].MaxTriggerValue {
 			//Send webhook maxtrigger
 			var webhookPay InvokedPayload
 
@@ -294,13 +295,13 @@ func UpdateCurrencies(){
 			webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
 
 			b, err := json.Marshal(webhookPay)
-			if err != nil{
+			if err != nil {
 				fmt.Printf("Json encoding error: %s\n", err)
 				return
 			}
 			SendWebhook(payload[i].WebhookURL, b)
 
 		}
-	//	fmt.Printf("Updated ID: %v\n %s\n", payload[i].ID.Hex(), http.StatusOK)
+		//	fmt.Printf("Updated ID: %v\n %s\n", payload[i].ID.Hex(), http.StatusOK)
 	}
 }

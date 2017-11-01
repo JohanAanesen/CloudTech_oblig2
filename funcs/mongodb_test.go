@@ -1,24 +1,23 @@
 package funcs
 
 import (
+	"fmt"
+	"gopkg.in/mgo.v2/bson"
+	"os"
 	"testing"
 	"time"
-	"fmt"
-	"os"
-	"gopkg.in/mgo.v2/bson"
 )
 
 func TestSaveData(t *testing.T) {
 	//var testData Data
 
 	testData := Data{
-		Base: "TEST",
-		Date: time.Now().Format("2006-01-02"),
+		Base:  "TEST",
+		Date:  time.Now().Format("2006-01-02"),
 		Rates: map[string]float64{"NOK": 1337, "USD": 69},
 	}
 
 	SaveData(testData)
-
 
 	db := DatabaseCon()
 	defer db.Close()
@@ -26,11 +25,11 @@ func TestSaveData(t *testing.T) {
 	dbSize, _ := c.Count()
 
 	var testData2 Data
-	c.Find(nil).Skip(dbSize-1).One(&testData2)
+	c.Find(nil).Skip(dbSize - 1).One(&testData2)
 
-	if testData2.Rates["NOK"] != 1337{
+	if testData2.Rates["NOK"] != 1337 {
 		t.Fatalf("ERROR expected: %s but got: %s", testData.Rates["NOK"], testData2.Rates["NOK"])
-	}else if testData2.Base != "TEST"{
+	} else if testData2.Base != "TEST" {
 		t.Fatalf("ERROR expected: %s but got: %s", testData.Base, testData2.Base)
 	}
 
@@ -49,12 +48,12 @@ func TestReadLatest(t *testing.T) {
 
 	var data Data
 
-	err :=  c.Find(nil).Skip(dbSize-1).One(&data)
-	if err != nil{
+	err := c.Find(nil).Skip(dbSize - 1).One(&data)
+	if err != nil {
 		fmt.Errorf("something went wrong reading mongodb: %s", err)
 	}
 
-	if data.Rates[out] != testValue{
+	if data.Rates[out] != testValue {
 		t.Fatalf("ERROR expected: %s but got: %s", data.Rates[out], testValue)
 	}
 }
@@ -73,17 +72,17 @@ func TestReadAverage(t *testing.T) {
 	var data3 Data
 	var average float64
 
-	err :=  c.Find(nil).Skip(dbSize-1).One(&data1)
-	err =  c.Find(nil).Skip(dbSize-2).One(&data2)
-	err =  c.Find(nil).Skip(dbSize-3).One(&data3)
-	if err != nil{
+	err := c.Find(nil).Skip(dbSize - 1).One(&data1)
+	err = c.Find(nil).Skip(dbSize - 2).One(&data2)
+	err = c.Find(nil).Skip(dbSize - 3).One(&data3)
+	if err != nil {
 		fmt.Errorf("something went wrong reading mongodb: %s", err)
 		os.Exit(1)
 	}
 
-	average = (data1.Rates[out] + data2.Rates[out] + data3.Rates[out])/3
+	average = (data1.Rates[out] + data2.Rates[out] + data3.Rates[out]) / 3
 
-	if testAverage != average{
+	if testAverage != average {
 		t.Fatalf("ERROR expected: %s but got: %s", average, testAverage)
 	}
 }
