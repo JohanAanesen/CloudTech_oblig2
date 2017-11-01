@@ -3,7 +3,6 @@ package oblig2
 import (
 	"net/http"
 	"github.com/JohanAanesen/CloudTech_oblig2/funcs"
-	"github.com/JohanAanesen/CloudTech_oblig2/handlers"
 )
 
 //Discord webhook
