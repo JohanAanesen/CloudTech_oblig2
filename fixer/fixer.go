@@ -1,4 +1,4 @@
-package main
+package fixer
 
 import (
 	"net/http"

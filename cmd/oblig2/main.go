@@ -1,4 +1,4 @@
-package main
+package oblig2
 
 import (
 	"net/http"
