@@ -5,3 +5,4 @@ External packages needed:
 ```
 go get gopkg.in/mgo.v2
 ```
+The app uses Heroku based deployment, and Heroku's Addon "Scheduler" for updating the currencies once a day.
