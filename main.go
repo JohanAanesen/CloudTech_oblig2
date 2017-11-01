@@ -26,7 +26,7 @@ func HandleMain(w http.ResponseWriter, r *http.Request) {
 	case "DELETE":
 		HandleDelete(URL[1], w, r)
 	default:
-		http.Error(w, "Not supported", http.StatusMethodNotAllowed)
+		http.Error(w, "Request not supported.", http.StatusNotImplemented)
 	}
 }
 
@@ -95,7 +95,7 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request){
 
 	err := c.Find(nil).All(&payload)
 	if err != nil {
-		fmt.Printf("It's fucked: %s\n", err)
+		fmt.Printf("Error: %s\n", err)
 		return
 	}
 
@@ -115,7 +115,7 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request){
 				fmt.Printf("Json encoding went to shit: %s\n", err)
 				return
 			}
-			sendWebhook(payload[i].WebhookURL, b)
+			SendWebhook(payload[i].WebhookURL, b)
 		}else if payload[i].CurrentRate >= payload[i].MaxTriggerValue{
 			//Send webhook maxtrigger
 			var webhookPay InvokedPayload
@@ -131,7 +131,7 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request){
 				fmt.Printf("Json encoding went to shit: %s\n", err)
 				return
 			}
-			sendWebhook(payload[i].WebhookURL, b)
+			SendWebhook(payload[i].WebhookURL, b)
 
 		}/*else{
 			//Don't send webhook? dunno

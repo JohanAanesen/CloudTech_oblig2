@@ -6,6 +6,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"bytes"
+	"io/ioutil"
 )
 
 
@@ -95,6 +96,7 @@ func HandleDelete(s string, w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+/*
 func HandleInvoke(s string, w http.ResponseWriter, r *http.Request) {
 	if bson.IsObjectIdHex(s) == false {
 		http.Error(w, "Not a valid ID", http.StatusBadRequest)
@@ -122,23 +124,24 @@ func HandleInvoke(s string, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(payload)
 
 }
+*/
 
-func sendWebhook(url string, data []byte) {
+func SendWebhook(url string, data []byte) {
 	//var jsonStr= []byte(`{"content":"shit"}`)
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(data))
-//	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+//	req, _ := http.Post(url, "application/json", bytes.NewBuffer(jsonStr))
 
-	req.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		fmt.Println(ioutil.ReadAll(resp.Body))
 	}
-	defer resp.Body.Close()
+
 }
 
-func updateCurrencies(w http.ResponseWriter){
+func updateCurrencies(){
+
+	GetFixer("EUR")
+
 	db := DatabaseCon()
 	defer db.Close()
 	c := db.DB("cloudtech2").C("webhooks")
@@ -148,23 +151,24 @@ func updateCurrencies(w http.ResponseWriter){
 
 	err := c.Find(nil).All(&payload)
 	if err != nil {
-		fmt.Printf("It's fucked: %s\n", err)
+		fmt.Printf("Error: %s\n", err)
 		return
 	}
 
 	for i := 0; i < count; i++{
-		newValue, err := GetFixer(payload[i].BaseCurrency, payload[i].TargetCurrency)
+		//newValue, err := GetFixer(payload[i].BaseCurrency, payload[i].TargetCurrency)
+		newValue := ReadLatest(payload[i].TargetCurrency)
 		if err != nil{
-			fmt.Printf("It's fucked: %s\n", err)
+			fmt.Printf("Error: %s\n", err)
 			break
 		}
 		payload[i].CurrentRate = newValue
 
 		err = c.UpdateId(payload[i].ID, payload[i])
 		if err != nil{
-			fmt.Printf("It's fucked: %s\n", err)
+			fmt.Printf("Error: %s\n", err)
 			break
 		}
-		fmt.Fprintf(w,"Updated ID: %v\n %s\n", payload[i].ID.Hex(), http.StatusOK)
+	//	fmt.Printf("Updated ID: %v\n %s\n", payload[i].ID.Hex(), http.StatusOK)
 	}
 }

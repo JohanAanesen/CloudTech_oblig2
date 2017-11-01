@@ -87,8 +87,8 @@ func TestHandleLatest(t *testing.T) {
 
 	testValue := ReadLatest("NOK")
 
-	json, _ := json.Marshal(testPayload)
-	reader := bytes.NewReader(json)
+	json1, _ := json.Marshal(testPayload)
+	reader := bytes.NewReader(json1)
 
 	req, err := http.NewRequest("POST", "/latest", reader)
 	if err != nil {
@@ -100,10 +100,91 @@ func TestHandleLatest(t *testing.T) {
 
 	handler.ServeHTTP(httpTest, req)
 
-	string := httpTest.Body.String()
-	responseValue, _ := strconv.ParseFloat(string, 64)
+	string1 := httpTest.Body.String()
+	responseValue, _ := strconv.ParseFloat(string1, 64)
 
 	if testValue != responseValue{
 		t.Fatalf("ERROR expected: %s but got: %s", testValue, responseValue)
 	}
 }
+
+func TestHandlePost(t *testing.T) {
+	var testPay Payload
+
+	testPay.WebhookURL = "TEST"
+	testPay.BaseCurrency = "EUR"
+	testPay.TargetCurrency = "NOK"
+	testPay.MinTriggerValue = 1
+	testPay.MaxTriggerValue = 1337
+
+
+	json1, _ := json.Marshal(testPay)
+	reader := bytes.NewReader(json1)
+
+	req, err := http.NewRequest("POST", "/", reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	httpTest := httptest.NewRecorder()
+	handler := http.HandlerFunc(HandlePost)
+
+	handler.ServeHTTP(httpTest, req)
+
+
+	db := DatabaseCon()
+	defer db.Close()
+	c := db.DB("cloudtech2").C("webhooks")
+	dbSize, _ := c.Count()
+
+	var testData Payload
+	c.Find(nil).Skip(dbSize-1).One(&testData)
+
+
+	if testPay.WebhookURL != testData.WebhookURL {
+		t.Errorf("ERROR: got %v want %v", testData.WebhookURL, testPay.WebhookURL)
+	}
+	if testPay.TargetCurrency != testData.TargetCurrency {
+		t.Errorf("ERROR: got %v want %v", testData.TargetCurrency, testPay.TargetCurrency)
+	}
+	if testPay.BaseCurrency != testData.BaseCurrency {
+		t.Errorf("ERROR: got %v want %v", testData.BaseCurrency, testPay.BaseCurrency)
+	}
+	if testPay.MaxTriggerValue != testData.MaxTriggerValue {
+		t.Errorf("ERROR: got %v want %v", testData.WebhookURL, testPay.WebhookURL)
+	}
+
+	c.Remove(bson.M{"webhookURL": "TEST"})
+
+}
+
+func TestHandlePost2(t *testing.T) {
+	var testPay Payload
+
+	testPay.WebhookURL = "test.url"
+	testPay.BaseCurrency = "JPY"
+	testPay.TargetCurrency = "NOK"
+	testPay.MinTriggerValue = 1
+	testPay.MaxTriggerValue = 1337
+
+
+	json1, _ := json.Marshal(testPay)
+	reader := bytes.NewReader(json1)
+
+	req, err := http.NewRequest("POST", "/", reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	httpTest := httptest.NewRecorder()
+	handler := http.HandlerFunc(HandlePost)
+
+	handler.ServeHTTP(httpTest, req)
+
+	if status := httpTest.Code; status != http.StatusNotImplemented {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusNotImplemented)
+	}
+
+}
+

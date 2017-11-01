@@ -3,12 +3,26 @@ package main
 import (
 	"testing"
 	"time"
+	"fmt"
 )
 
 func TestGetFixer(t *testing.T) {
 	var out = []string{"EUR", "NOK"}
-	testValue, _ := GetFixer(out[0], out[1])
+//	testValue := GetFixer(out[0], out[1])
 
+	db := DatabaseCon()
+	defer db.Close()
+	c := db.DB("cloudtech2").C("fixer")
+	dbSize, _ := c.Count()
+
+	var data Data
+
+	err :=  c.Find(nil).Skip(dbSize-1).One(&data)
+	if err != nil{
+		fmt.Errorf("something went wrong reading mongodb: %s", err)
+	}
+
+	testValue := data.Rates[out[1]]
 	testValue2 := ReadLatest(out[1])
 
 
