@@ -2,7 +2,7 @@ package main
 
 import (
 	"time"
-	"github.com/JohanAAnesen/CloudTech_oblig2/handlers"
+	"github.com/JohanAanesen/CloudTech_oblig2/funcs"
 )
 func main() {
 	for {
@@ -10,7 +10,7 @@ func main() {
 		delay := time.Hour * 24
 
 		//sendDiscordLogEntry(text)
-		handlers.UpdateCurrencies()
+		funcs.UpdateCurrencies()
 
 		time.Sleep(delay)
 	}

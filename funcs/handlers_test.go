@@ -1,4 +1,4 @@
-package handlers
+package funcs
 
 import (
 	"testing"
@@ -8,8 +8,6 @@ import (
 	"encoding/json"
 	"bytes"
 	"strconv"
-	"github.com/JohanAAnesen/CloudTech_oblig2/mongodb"
-	"github.com/JohanAAnesen/CloudTech_oblig2/cmd/oblig2"
 )
 
 func TestHandleDelete(t *testing.T) {
@@ -23,7 +21,7 @@ func TestHandleDelete(t *testing.T) {
 	payload.ID = bson.NewObjectId()
 	payload.Base = "TEST"
 
-	db := mongodb.DatabaseCon()
+	db := DatabaseCon()
 	defer db.Close()
 	c := db.DB("cloudtech2").C("webhooks")
 	//dbSize, _ := c.Count()
@@ -36,7 +34,7 @@ func TestHandleDelete(t *testing.T) {
 	}
 
 	httpTest := httptest.NewRecorder()
-	handler := http.HandlerFunc(oblig2.HandleMain)
+	handler := http.HandlerFunc(HandleMain)
 
 
 	handler.ServeHTTP(httpTest, req)
@@ -62,7 +60,7 @@ func TestHandleGet(t *testing.T) {
 	}
 
 	httpTest := httptest.NewRecorder()
-	handler := http.HandlerFunc(oblig2.HandleMain)
+	handler := http.HandlerFunc(HandleMain)
 
 	handler.ServeHTTP(httpTest, req)
 
@@ -86,7 +84,7 @@ func TestHandleLatest(t *testing.T) {
 	testPayload.BaseCurrency = "EUR"
 	testPayload.TargetCurrency = "NOK"
 
-	testValue := mongodb.ReadLatest("NOK")
+	testValue := ReadLatest("NOK")
 
 	json1, _ := json.Marshal(testPayload)
 	reader := bytes.NewReader(json1)
@@ -115,7 +113,7 @@ func TestHandleAverage(t *testing.T) {
 	testPayload.BaseCurrency = "EUR"
 	testPayload.TargetCurrency = "NOK"
 
-	testValue := mongodb.ReadAverage("NOK")
+	testValue := ReadAverage("NOK")
 
 	json1, _ := json.Marshal(testPayload)
 	reader := bytes.NewReader(json1)
@@ -162,7 +160,7 @@ func TestHandlePost(t *testing.T) {
 	handler.ServeHTTP(httpTest, req)
 
 
-	db := mongodb.DatabaseCon()
+	db := DatabaseCon()
 	defer db.Close()
 	c := db.DB("cloudtech2").C("webhooks")
 	dbSize, _ := c.Count()

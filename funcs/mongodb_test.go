@@ -1,4 +1,4 @@
-package mongodb
+package funcs
 
 import (
 	"testing"
@@ -6,13 +6,12 @@ import (
 	"fmt"
 	"os"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/JohanAAnesen/CloudTech_oblig2/handlers"
 )
 
 func TestSaveData(t *testing.T) {
 	//var testData Data
 
-	testData := handlers.Data{
+	testData := Data{
 		Base: "TEST",
 		Date: time.Now().Format("2006-01-02"),
 		Rates: map[string]float64{"NOK": 1337, "USD": 69},
@@ -26,7 +25,7 @@ func TestSaveData(t *testing.T) {
 	c := db.DB("cloudtech2").C("fixer")
 	dbSize, _ := c.Count()
 
-	var testData2 handlers.Data
+	var testData2 Data
 	c.Find(nil).Skip(dbSize-1).One(&testData2)
 
 	if testData2.Rates["NOK"] != 1337{
@@ -48,7 +47,7 @@ func TestReadLatest(t *testing.T) {
 	c := db.DB("cloudtech2").C("fixer")
 	dbSize, _ := c.Count()
 
-	var data handlers.Data
+	var data Data
 
 	err :=  c.Find(nil).Skip(dbSize-1).One(&data)
 	if err != nil{
@@ -69,9 +68,9 @@ func TestReadAverage(t *testing.T) {
 	c := db.DB("cloudtech2").C("fixer")
 	dbSize, _ := c.Count()
 
-	var data1 handlers.Data
-	var data2 handlers.Data
-	var data3 handlers.Data
+	var data1 Data
+	var data2 Data
+	var data3 Data
 	var average float64
 
 	err :=  c.Find(nil).Skip(dbSize-1).One(&data1)

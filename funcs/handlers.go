@@ -1,4 +1,4 @@
-package handlers
+package funcs
 
 import (
 	"encoding/json"
@@ -7,9 +7,24 @@ import (
 	"net/http"
 	"bytes"
 	"io/ioutil"
-	"github.com/JohanAAnesen/CloudTech_oblig2/mongodb"
-	"github.com/JohanAAnesen/CloudTech_oblig2/fixer"
+	"strings"
 )
+
+//WORKS
+func HandleMain(w http.ResponseWriter, r *http.Request) {
+	URL := strings.Split(r.URL.Path, "/")
+
+	switch r.Method {
+	case "GET":
+		HandleGet(URL[1], w, r)
+	case "POST":
+		HandlePost(w, r)
+	case "DELETE":
+		HandleDelete(URL[1], w, r)
+	default:
+		http.Error(w, "Request not supported.", http.StatusNotImplemented)
+	}
+}
 
 //WORKS
 func HandlePost(w http.ResponseWriter, r *http.Request) {
@@ -27,13 +42,13 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//payload.CurrentRate, err = getFixer(payload.BaseCurrency, payload.TargetCurrency)
-	payload.CurrentRate = mongodb.ReadLatest(payload.TargetCurrency)
+	payload.CurrentRate = ReadLatest(payload.TargetCurrency)
 	if err != nil{
 		http.Error(w, "Currency not found", http.StatusBadRequest)
 		return
 	}
 
-	db := mongodb.DatabaseCon()
+	db := DatabaseCon()
 
 	payload.ID = bson.NewObjectId()
 
@@ -53,7 +68,7 @@ func HandleGet(s string, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db := mongodb.DatabaseCon()
+	db := DatabaseCon()
 
 	var payload Payload
 
@@ -65,7 +80,7 @@ func HandleGet(s string, w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	//	payload.CurrentRate, err = getFixer(payload.BaseCurrency, payload.TargetCurrency)
-	payload.CurrentRate = mongodb.ReadLatest(payload.TargetCurrency)
+	payload.CurrentRate = ReadLatest(payload.TargetCurrency)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -82,7 +97,7 @@ func HandleDelete(s string, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db := mongodb.DatabaseCon()
+	db := DatabaseCon()
 
 	err := db.DB("cloudtech2").C("webhooks").RemoveId(bson.ObjectIdHex(s))
 	if err != nil {
@@ -110,7 +125,7 @@ func HandleLatest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		value := mongodb.ReadLatest(data.TargetCurrency)
+		value := ReadLatest(data.TargetCurrency)
 
 		http.Header.Add(w.Header(), "content-type", "application/json")
 		fmt.Fprintf(w, "%v", value)
@@ -136,7 +151,7 @@ func HandleAverage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		//value := getFixerAverage(current_time, data.BaseCurrency, data.TargetCurrency)
-		value := mongodb.ReadAverage(data.TargetCurrency)
+		value := ReadAverage(data.TargetCurrency)
 		http.Header.Add(w.Header(), "content-type", "application/json")
 		fmt.Fprintf(w, "%v", value)
 	}
@@ -147,7 +162,7 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request){
 	//	fmt.Fprint(w,"fuck off m8")
 	//	updateCurrencies(w)
 
-	db := mongodb.DatabaseCon()
+	db := DatabaseCon()
 	defer db.Close()
 	c := db.DB("cloudtech2").C("webhooks")
 	count, _ := c.Count()
@@ -223,9 +238,9 @@ func SendWebhook(url string, data []byte) {
 //NOT TESTED
 func UpdateCurrencies(){
 
-	fixer.GetFixer("EUR")
+	GetFixer("EUR")
 
-	db := mongodb.DatabaseCon()
+	db := DatabaseCon()
 	defer db.Close()
 	c := db.DB("cloudtech2").C("webhooks")
 	count, _ := c.Count()
@@ -240,7 +255,7 @@ func UpdateCurrencies(){
 
 	for i := 0; i < count; i++{
 		//newValue, err := GetFixer(payload[i].BaseCurrency, payload[i].TargetCurrency)
-		newValue := mongodb.ReadLatest(payload[i].TargetCurrency)
+		newValue := ReadLatest(payload[i].TargetCurrency)
 		if err != nil{
 			fmt.Printf("Error: %s\n", err)
 			break

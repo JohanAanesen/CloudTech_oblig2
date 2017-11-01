@@ -1,12 +1,10 @@
-package fixer
+package funcs
 
 import (
 	"testing"
 	"fmt"
 	"time"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/JohanAAnesen/CloudTech_oblig2/handlers"
-	"github.com/JohanAAnesen/CloudTech_oblig2/mongodb"
 )
 
 func TestGetFixer(t *testing.T) {
@@ -15,12 +13,12 @@ func TestGetFixer(t *testing.T) {
 
 	timeTest := time.Now().Format("2006-01-02")
 
-	db := mongodb.DatabaseCon()
+	db := DatabaseCon()
 	defer db.Close()
 	c := db.DB("cloudtech2").C("fixer")
 	dbSize, _ := c.Count()
 
-	var data handlers.Data
+	var data Data
 
 	err :=  c.Find(nil).Skip(dbSize-1).One(&data)
 	if err != nil{

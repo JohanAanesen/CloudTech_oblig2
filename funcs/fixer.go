@@ -1,11 +1,10 @@
-package fixer
+package funcs
 
 import (
 	"net/http"
 	"fmt"
 	"encoding/json"
-	"github.com/JohanAAnesen/CloudTech_oblig2/handlers"
-	"github.com/JohanAAnesen/CloudTech_oblig2/mongodb"
+
 )
 
 func GetFixer(s1 string){//, s2 string)(float64, error) {
@@ -17,7 +16,7 @@ func GetFixer(s1 string){//, s2 string)(float64, error) {
 	}
 
 	//data object
-	var data handlers.Data
+	var data Data
 
 	//json decoder
 	err = json.NewDecoder(json1.Body).Decode(&data)
@@ -27,7 +26,7 @@ func GetFixer(s1 string){//, s2 string)(float64, error) {
 	}
 
 	//Storing data in db
-	mongodb.SaveData(data)
+	SaveData(data)
 
 //	return data.Rates[s2], nil
 }

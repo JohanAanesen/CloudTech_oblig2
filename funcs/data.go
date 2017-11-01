@@ -1,4 +1,4 @@
-package handlers
+package funcs
 
 import (
 	"gopkg.in/mgo.v2/bson"

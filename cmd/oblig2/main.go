@@ -2,8 +2,8 @@ package oblig2
 
 import (
 	"net/http"
-	"strings"
-	"github.com/JohanAAnesen/CloudTech_oblig2/handlers"
+	"github.com/JohanAanesen/CloudTech_oblig2/funcs"
+	"github.com/JohanAanesen/CloudTech_oblig2/handlers"
 )
 
 //Discord webhook
@@ -13,32 +13,16 @@ import (
 //Slack webhook
 //var url = "https://hooks.slack.com/services/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"
 
-//WORKS
-func HandleMain(w http.ResponseWriter, r *http.Request) {
-	URL := strings.Split(r.URL.Path, "/")
-
-	switch r.Method {
-	case "GET":
-		handlers.HandleGet(URL[1], w, r)
-	case "POST":
-		handlers.HandlePost(w, r)
-	case "DELETE":
-		handlers.HandleDelete(URL[1], w, r)
-	default:
-		http.Error(w, "Request not supported.", http.StatusNotImplemented)
-	}
-}
-
 func main() {
 	////////////NEED TO FIGURE THIS ONE OUT////////////
 /*	for range time.NewTicker(24 * time.Second).C {
 		updateCurrencies()
 	}*/
 
-	http.HandleFunc("/", HandleMain)
-	http.HandleFunc("/latest", handlers.HandleLatest)
-	http.HandleFunc("/average", handlers.HandleAverage)
-	http.HandleFunc("/evaluationtrigger", handlers.HandleEvaluation)
+	http.HandleFunc("/", funcs.HandleMain)
+	http.HandleFunc("/latest", funcs.HandleLatest)
+	http.HandleFunc("/average", funcs.HandleAverage)
+	http.HandleFunc("/evaluationtrigger", funcs.HandleEvaluation)
 
 
 	//port := os.Getenv("PORT")
