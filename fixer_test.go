@@ -3,11 +3,15 @@ package main
 import (
 	"testing"
 	"fmt"
+	"time"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func TestGetFixer(t *testing.T) {
-	var out = []string{"EUR", "NOK"}
-//	testValue := GetFixer(out[0], out[1])
+
+	GetFixer("EUR")
+
+	timeTest := time.Now().Format("2006-01-02")
 
 	db := DatabaseCon()
 	defer db.Close()
@@ -21,13 +25,16 @@ func TestGetFixer(t *testing.T) {
 		fmt.Errorf("something went wrong reading mongodb: %s", err)
 	}
 
-	testValue := data.Rates[out[1]]
-	testValue2 := ReadLatest(out[1])
+	testValue := data.Date
+	//testValue2 := ReadLatest(out[1])
 
 
-	if testValue != testValue2{
-		t.Fatalf("ERROR expected: %s but got: %s", testValue2, testValue)
+	if testValue != timeTest{
+		t.Fatalf("ERROR expected: %s but got: %s", timeTest, testValue)
 	}
+
+	//remove what got added to db
+	c.Remove(bson.M{"date": timeTest})
 
 }
 /*

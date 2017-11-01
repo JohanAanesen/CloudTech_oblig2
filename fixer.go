@@ -20,7 +20,7 @@ func GetFixer(s1 string){//, s2 string)(float64, error) {
 	//json decoder
 	err = json.NewDecoder(json1.Body).Decode(&data)
 	if err != nil { //err handler
-		fmt.Printf("shit, %s\n", err)
+		fmt.Printf("Error: %s\n", err)
 		return
 	}
 

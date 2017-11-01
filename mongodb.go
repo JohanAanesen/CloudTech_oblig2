@@ -3,7 +3,6 @@ package main
 import (
 	"gopkg.in/mgo.v2"
 	"fmt"
-	"os"
 )
 
 var dbURL = "mongodb://johan:123@ds227035.mlab.com:27035/cloudtech2"
@@ -61,7 +60,7 @@ func ReadAverage(s string)float64{
 	err =  c.Find(nil).Skip(dbSize-3).One(&data3)
 	if err != nil{
 		fmt.Errorf("something went wrong reading mongodb: %s", err)
-		os.Exit(1)
+		return 0
 	}
 
 	average = (data1.Rates[s] + data2.Rates[s] + data3.Rates[s])/3
