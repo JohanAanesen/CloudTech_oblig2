@@ -1,2 +1,2 @@
-job: webhook
 web: oblig2
+job: webhook
