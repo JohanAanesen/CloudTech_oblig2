@@ -1,7 +1,6 @@
 package funcs
 
 import (
-	"fmt"
 	"gopkg.in/mgo.v2/bson"
 	"os"
 	"testing"
@@ -28,7 +27,7 @@ func TestSaveData(t *testing.T) {
 	c.Find(nil).Skip(dbSize - 1).One(&testData2)
 
 	if testData2.Rates["NOK"] != 1337 {
-		t.Fatalf("ERROR expected: %s but got: %s", testData.Rates["NOK"], testData2.Rates["NOK"])
+		t.Fatalf("ERROR expected: %v but got: %v", testData.Rates["NOK"], testData2.Rates["NOK"])
 	} else if testData2.Base != "TEST" {
 		t.Fatalf("ERROR expected: %s but got: %s", testData.Base, testData2.Base)
 	}
@@ -50,11 +49,11 @@ func TestReadLatest(t *testing.T) {
 
 	err := c.Find(nil).Skip(dbSize - 1).One(&data)
 	if err != nil {
-		fmt.Errorf("something went wrong reading mongodb: %s", err)
+		t.Fatalf("something went wrong reading mongodb: %s", err)
 	}
 
 	if data.Rates[out] != testValue {
-		t.Fatalf("ERROR expected: %s but got: %s", data.Rates[out], testValue)
+		t.Fatalf("ERROR expected: %v but got: %v", data.Rates[out], testValue)
 	}
 }
 
@@ -76,13 +75,13 @@ func TestReadAverage(t *testing.T) {
 	err = c.Find(nil).Skip(dbSize - 2).One(&data2)
 	err = c.Find(nil).Skip(dbSize - 3).One(&data3)
 	if err != nil {
-		fmt.Errorf("something went wrong reading mongodb: %s", err)
+		t.Fatalf("something went wrong reading mongodb: %s", err)
 		os.Exit(1)
 	}
 
 	average = (data1.Rates[out] + data2.Rates[out] + data3.Rates[out]) / 3
 
 	if testAverage != average {
-		t.Fatalf("ERROR expected: %s but got: %s", average, testAverage)
+		t.Fatalf("ERROR expected: %v but got: %v", average, testAverage)
 	}
 }

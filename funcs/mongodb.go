@@ -26,7 +26,7 @@ func SaveData(data Data) {
 
 	err := c.Insert(data)
 	if err != nil {
-		fmt.Errorf("something went wrong writing to mongodb: %s", err)
+		fmt.Printf("something went wrong writing to mongodb: %s", err)
 	}
 }
 
@@ -41,7 +41,7 @@ func ReadLatest(s string) float64 {
 
 	err := c.Find(nil).Skip(dbSize - 1).One(&data)
 	if err != nil {
-		fmt.Errorf("something went wrong reading mongodb: %s", err)
+		fmt.Printf("something went wrong reading mongodb: %s", err)
 	}
 
 	return data.Rates[s]
@@ -63,7 +63,7 @@ func ReadAverage(s string) float64 {
 	err = c.Find(nil).Skip(dbSize - 2).One(&data2)
 	err = c.Find(nil).Skip(dbSize - 3).One(&data3)
 	if err != nil {
-		fmt.Errorf("something went wrong reading mongodb: %s", err)
+		fmt.Printf("something went wrong reading mongodb: %s", err)
 		return 0
 	}
 

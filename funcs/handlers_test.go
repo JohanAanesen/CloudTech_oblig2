@@ -102,7 +102,7 @@ func TestHandleLatest(t *testing.T) {
 	responseValue, _ := strconv.ParseFloat(string1, 64)
 
 	if testValue != responseValue {
-		t.Fatalf("ERROR expected: %s but got: %s", testValue, responseValue)
+		t.Fatalf("ERROR expected: %v but got: %v", testValue, responseValue)
 	}
 }
 
@@ -131,7 +131,7 @@ func TestHandleAverage(t *testing.T) {
 	responseValue, _ := strconv.ParseFloat(string1, 64)
 
 	if testValue != responseValue {
-		t.Fatalf("ERROR expected: %s but got: %s", testValue, responseValue)
+		t.Fatalf("ERROR expected: %v but got: %v", testValue, responseValue)
 	}
 }
 

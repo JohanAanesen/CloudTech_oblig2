@@ -8,7 +8,7 @@ import (
 func main() {
 	for {
 		//text := "Heroku timer test at: " + time.Now().String()
-		delay := time.Hour * 24
+		delay := time.Minute * 5
 
 		//sendDiscordLogEntry(text)
 		funcs.UpdateCurrencies()

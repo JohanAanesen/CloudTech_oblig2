@@ -1,7 +1,6 @@
 package funcs
 
 import (
-	"fmt"
 	"gopkg.in/mgo.v2/bson"
 	"testing"
 	"time"
@@ -22,7 +21,7 @@ func TestGetFixer(t *testing.T) {
 
 	err := c.Find(nil).Skip(dbSize - 1).One(&data)
 	if err != nil {
-		fmt.Errorf("something went wrong reading mongodb: %s", err)
+		t.Fatalf("something went wrong reading mongodb: %s", err)
 	}
 
 	testValue := data.Date
