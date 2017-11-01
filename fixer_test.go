@@ -2,7 +2,6 @@ package main
 
 import (
 	"testing"
-	"time"
 	"fmt"
 )
 
@@ -31,7 +30,7 @@ func TestGetFixer(t *testing.T) {
 	}
 
 }
-
+/*
 func TestGetFixerAverage(t *testing.T) {
 	testTime := time.Now()
 	var out = []string{"EUR", "NOK"}
@@ -42,3 +41,4 @@ func TestGetFixerAverage(t *testing.T) {
 		t.Fatalf("ERROR expected: Integer higher than 0, got: %v", testAverage)
 	}
 }
+*/

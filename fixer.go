@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"fmt"
 	"encoding/json"
-	"time"
 )
 
 func GetFixer(s1 string){//, s2 string)(float64, error) {
@@ -30,7 +29,7 @@ func GetFixer(s1 string){//, s2 string)(float64, error) {
 
 //	return data.Rates[s2], nil
 }
-
+/*
 func GetFixerAverage(t time.Time, s1 string, s2 string) float64 {
 	var total float64
 	//creates copy of time
@@ -60,4 +59,4 @@ func GetFixerAverage(t time.Time, s1 string, s2 string) float64 {
 	}
 
 	return total / 7
-}
+}*/
