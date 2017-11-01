@@ -91,6 +91,8 @@ func HandleDelete(s string, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer db.Close()
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func HandleInvoke(s string, w http.ResponseWriter, r *http.Request) {

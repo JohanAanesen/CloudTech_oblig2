@@ -41,6 +41,10 @@ func HandleLatest(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Somethings wrong: %s\n", http.StatusBadRequest)
 			return
 		}
+		if data.BaseCurrency != "EUR"{
+			http.Error(w, "Not implemented: %s\n", http.StatusNotImplemented)
+			return
+		}
 		/*value, err := getFixer(data.BaseCurrency, data.TargetCurrency)
 		if err != nil {
 			http.Error(w, "Somethings wrong: %s\n", http.StatusBadRequest)
@@ -64,6 +68,11 @@ func HandleAverage(w http.ResponseWriter, r *http.Request) {
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
 			http.Error(w, "Somethings wrong: %s\n", http.StatusBadRequest)
+			return
+		}
+
+		if data.BaseCurrency != "EUR"{
+			http.Error(w, "Not implemented: %s\n", http.StatusNotImplemented)
 			return
 		}
 		//value := getFixerAverage(current_time, data.BaseCurrency, data.TargetCurrency)
