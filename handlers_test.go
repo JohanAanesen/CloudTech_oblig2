@@ -79,7 +79,6 @@ func TestHandleGet(t *testing.T) {
 }
 
 func TestHandleLatest(t *testing.T) {
-
 	var testPayload LatestPayload
 
 	testPayload.BaseCurrency = "EUR"
@@ -97,6 +96,35 @@ func TestHandleLatest(t *testing.T) {
 
 	httpTest := httptest.NewRecorder()
 	handler := http.HandlerFunc(HandleLatest)
+
+	handler.ServeHTTP(httpTest, req)
+
+	string1 := httpTest.Body.String()
+	responseValue, _ := strconv.ParseFloat(string1, 64)
+
+	if testValue != responseValue{
+		t.Fatalf("ERROR expected: %s but got: %s", testValue, responseValue)
+	}
+}
+
+func TestHandleAverage(t *testing.T) {
+	var testPayload LatestPayload
+
+	testPayload.BaseCurrency = "EUR"
+	testPayload.TargetCurrency = "NOK"
+
+	testValue := ReadAverage("NOK")
+
+	json1, _ := json.Marshal(testPayload)
+	reader := bytes.NewReader(json1)
+
+	req, err := http.NewRequest("POST", "/average", reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	httpTest := httptest.NewRecorder()
+	handler := http.HandlerFunc(HandleAverage)
 
 	handler.ServeHTTP(httpTest, req)
 

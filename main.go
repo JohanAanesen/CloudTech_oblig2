@@ -45,11 +45,7 @@ func HandleLatest(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Not implemented: %s\n", http.StatusNotImplemented)
 			return
 		}
-		/*value, err := getFixer(data.BaseCurrency, data.TargetCurrency)
-		if err != nil {
-			http.Error(w, "Somethings wrong: %s\n", http.StatusBadRequest)
-			return
-		}*/
+
 		value := ReadLatest(data.TargetCurrency)
 
 		http.Header.Add(w.Header(), "content-type", "application/json")
