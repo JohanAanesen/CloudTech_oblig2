@@ -6,7 +6,6 @@ import (
 	"net/http"
 )
 
-//GetFixer - retrieves the newest currencies from fixer.io and stores them in database
 func GetFixer(s1 string) { //, s2 string)(float64, error) {
 
 	json1, err := http.Get("http://api.fixer.io/latest?base=" + s1) //+ "," + s2)

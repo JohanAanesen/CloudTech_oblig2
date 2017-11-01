@@ -1,0 +1,13 @@
+{
+	"comment": "",
+	"heroku": {
+		"goVersion": "go1.7",
+		"install": [
+			"./cmd/webhook",
+			"./cmd/oblig2"
+		]
+	},
+	"ignore": "test",
+	"package": [],
+	"rootPath": "CloudTech_oblig2"
+}

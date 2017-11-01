@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-//HandleMain main functio for /
+//WORKS
 func HandleMain(w http.ResponseWriter, r *http.Request) {
 	URL := strings.Split(r.URL.Path, "/")
 
@@ -26,7 +26,7 @@ func HandleMain(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//HandlePost handles POST requests to main
+//WORKS
 func HandlePost(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var payload Payload
@@ -61,7 +61,7 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", payload.ID.Hex())
 }
 
-//HandleGet handles GET requests to main
+//WORKS
 func HandleGet(s string, w http.ResponseWriter, r *http.Request) {
 	if bson.IsObjectIdHex(s) == false {
 		http.Error(w, "Not a valid ID", http.StatusBadRequest)
@@ -90,7 +90,7 @@ func HandleGet(s string, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(payload)
 }
 
-//HandleDelete handles DELETE request to main
+//WORKS
 func HandleDelete(s string, w http.ResponseWriter, r *http.Request) {
 	if bson.IsObjectIdHex(s) == false {
 		http.Error(w, "Not a valid ID", http.StatusBadRequest)
@@ -109,7 +109,7 @@ func HandleDelete(s string, w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-//HandleLatest handles POST requests to /latest
+//WORKS
 func HandleLatest(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		var data LatestPayload
@@ -134,7 +134,7 @@ func HandleLatest(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//HandleAverage handles POST request to /average
+//WORKS
 func HandleAverage(w http.ResponseWriter, r *http.Request) {
 	//current_time := time.Now().Local()
 	if r.Method == "POST" {
@@ -158,7 +158,7 @@ func HandleAverage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//HandleEvaluation handles evaluation trigger for evaluation purposes
+//WORKS
 func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 	//	fmt.Fprint(w,"fuck off m8")
 	//	updateCurrencies(w)
@@ -223,7 +223,7 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 
 }
 
-//SendWebhook sends the webhook to url with data provided
+//WORKS
 func SendWebhook(url string, data []byte) {
 	//var jsonStr= []byte(`{"content":"shit"}`)
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
@@ -236,7 +236,7 @@ func SendWebhook(url string, data []byte) {
 
 }
 
-//UpdateCurrencies updates the currencies to all the registered webhooks and sends webhook if triggered
+//NOT TESTED
 func UpdateCurrencies() {
 
 	GetFixer("EUR")

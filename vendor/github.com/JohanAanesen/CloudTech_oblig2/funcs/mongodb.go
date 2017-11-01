@@ -7,7 +7,6 @@ import (
 
 var dbURL = "mongodb://johan:123@ds227035.mlab.com:27035/cloudtech2"
 
-//DatabaseCon connects to database and returns session
 func DatabaseCon() *mgo.Session {
 	session, err := mgo.Dial(dbURL)
 	if err != nil {
@@ -18,7 +17,6 @@ func DatabaseCon() *mgo.Session {
 	return session
 }
 
-//SaveData stores data in database
 func SaveData(data Data) {
 	db := DatabaseCon()
 	defer db.Close()
@@ -30,7 +28,6 @@ func SaveData(data Data) {
 	}
 }
 
-//ReadLatest retrieves the latest currencies from database
 func ReadLatest(s string) float64 {
 	db := DatabaseCon()
 	defer db.Close()
@@ -47,7 +44,6 @@ func ReadLatest(s string) float64 {
 	return data.Rates[s]
 }
 
-//ReadAverage retrieves the average of the past 3 days from database
 func ReadAverage(s string) float64 {
 	db := DatabaseCon()
 	defer db.Close()

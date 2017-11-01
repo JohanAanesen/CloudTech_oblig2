@@ -1,0 +1,14 @@
+{
+  "name": "oblig2",
+  "description": "Assignment 2 in Cloud Technologies by Johan Aanesen",
+  "keywords": [
+    "imt2681",
+    "go",
+    "assignment",
+    "plisfunk"
+  ],
+  "image": "heroku/go:1.9",
+  "mount_dir": "src/github.com/JohanAanesen/CloudTech_oblig2",
+  "website": "http://github.com/JohanAanesen/CloudTech_oblig2",
+  "repository": "http://github.com/JohanAanesen/CloudTech_oblig2"
+}
