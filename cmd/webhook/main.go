@@ -5,8 +5,7 @@ import (
 )
 
 func main() {
-
-		//sendDiscordLogEntry(text)
-		funcs.UpdateCurrencies()
+	
+	funcs.UpdateCurrencies()
 
 }
