@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	
+
 	funcs.UpdateCurrencies()
 
 }
