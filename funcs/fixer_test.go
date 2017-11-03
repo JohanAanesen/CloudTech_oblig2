@@ -10,7 +10,13 @@ func TestGetFixer(t *testing.T) {
 
 	GetFixer("EUR")
 
-	timeTest := time.Now().Format("2006-01-02")
+	hour, _, _ := time.Now().Clock()
+	timeTest := time.Now()
+	if hour < 16 {
+		timeTest = timeTest.AddDate(0,0,-1)
+	}
+	timeTestString := timeTest.Format("2006-01-02")
+
 
 	db := DatabaseCon()
 	defer db.Close()
@@ -27,7 +33,7 @@ func TestGetFixer(t *testing.T) {
 	testValue := data.Date
 	//testValue2 := ReadLatest(out[1])
 
-	if testValue != timeTest {
+	if testValue != timeTestString {
 		t.Fatalf("ERROR expected: %s but got: %s", timeTest, testValue)
 	}
 
