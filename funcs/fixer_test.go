@@ -38,7 +38,7 @@ func TestGetFixer(t *testing.T) {
 	}
 
 	//remove what got added to db
-	c.Remove(bson.M{"date": timeTest})
+	c.Remove(bson.M{"date": timeTestString})
 
 }
 
