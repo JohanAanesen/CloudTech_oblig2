@@ -10,9 +10,9 @@ func TestGetFixer(t *testing.T) {
 
 	GetFixer("EUR")
 
-	hour, _, _ := time.Now().Clock()
+	hour, min, _ := time.Now().Clock()
 	timeTest := time.Now()
-	if hour < 16 {
+	if hour < 17 && min < 30 {
 		timeTest = timeTest.AddDate(0, 0, -1)
 	}
 	timeTestString := timeTest.Format("2006-01-02")
