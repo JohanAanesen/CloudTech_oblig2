@@ -12,7 +12,7 @@ func TestGetFixer(t *testing.T) {
 
 	hour, _, _ := time.Now().Clock()
 	timeTest := time.Now()
-	if hour < 17{
+	if hour < 17 {
 		timeTest = timeTest.AddDate(0, 0, -1)
 	}
 	timeTestString := timeTest.Format("2006-01-02")
