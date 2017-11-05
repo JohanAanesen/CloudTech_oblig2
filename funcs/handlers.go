@@ -32,7 +32,8 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 	var payload Payload
 	err := decoder.Decode(&payload)
 	if err != nil {
-		http.Error(w, "Something went wrong", http.StatusInternalServerError)
+		http.Error(w, "Something went wrong", http.StatusBadRequest)
+		return
 	}
 	defer r.Body.Close()
 
@@ -55,6 +56,7 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 	test := db.DB("cloudtech2").C("webhooks").Insert(&payload)
 	if test != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 	defer db.Close()
 
@@ -82,7 +84,7 @@ func HandleGet(s string, w http.ResponseWriter, r *http.Request) {
 	//	payload.CurrentRate, err = getFixer(payload.BaseCurrency, payload.TargetCurrency)
 	payload.CurrentRate = ReadLatest(payload.TargetCurrency)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -177,7 +179,7 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for i := 0; i < count; i++ {
-		if payload[i].CurrentRate <= payload[i].MinTriggerValue {
+		//if payload[i].CurrentRate <= payload[i].MinTriggerValue {
 			//Send webhook mintrigger
 			var webhookPay InvokedPayload
 
@@ -193,7 +195,7 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			SendWebhook(payload[i].WebhookURL, b)
-		} else if payload[i].CurrentRate >= payload[i].MaxTriggerValue {
+	/*	} else if payload[i].CurrentRate >= payload[i].MaxTriggerValue {
 			//Send webhook maxtrigger
 			var webhookPay InvokedPayload
 
@@ -210,7 +212,7 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 			}
 			SendWebhook(payload[i].WebhookURL, b)
 
-		} /*else{
+		}*/ /*else{
 			//Don't send webhook? dunno
 			var jsonStr= []byte(`{"content":"Within margins"}`)
 			sendWebhook(url, jsonStr)
