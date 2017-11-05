@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
-	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -228,13 +227,24 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 //SendWebhook sends the webhook to url with data provided
 func SendWebhook(url string, data []byte) {
 	//var jsonStr= []byte(`{"content":"shit"}`)
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+	//resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
 	//	req, _ := http.Post(url, "application/json", bytes.NewBuffer(jsonStr))
 
-	if err != nil {
+	/*if err != nil {
 		fmt.Println(err)
 		fmt.Println(ioutil.ReadAll(resp.Body))
+	}*/
+
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(data))
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
 	}
+	defer resp.Body.Close()
 
 }
 
