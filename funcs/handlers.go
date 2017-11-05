@@ -76,7 +76,7 @@ func HandleGet(s string, w http.ResponseWriter, r *http.Request) {
 
 	err := db.DB("cloudtech2").C("webhooks").FindId(bson.ObjectIdHex(s)).One(&payload)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	defer db.Close()
