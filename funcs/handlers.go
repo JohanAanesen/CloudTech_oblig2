@@ -180,22 +180,22 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 
 	for i := 0; i < count; i++ {
 		//if payload[i].CurrentRate <= payload[i].MinTriggerValue {
-			//Send webhook mintrigger
-			var webhookPay InvokedPayload
+		//Send webhook mintrigger
+		var webhookPay InvokedPayload
 
-			webhookPay.BaseCurrency = payload[i].BaseCurrency
-			webhookPay.TargetCurrency = payload[i].TargetCurrency
-			webhookPay.CurrentRate = payload[i].CurrentRate
-			webhookPay.MinTriggerValue = payload[i].MinTriggerValue
-			webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
+		webhookPay.BaseCurrency = payload[i].BaseCurrency
+		webhookPay.TargetCurrency = payload[i].TargetCurrency
+		webhookPay.CurrentRate = payload[i].CurrentRate
+		webhookPay.MinTriggerValue = payload[i].MinTriggerValue
+		webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
 
-			b, err := json.Marshal(webhookPay)
-			if err != nil {
-				fmt.Printf("Json encoding went to shit: %s\n", err)
-				return
-			}
-			SendWebhook(payload[i].WebhookURL, b)
-	/*	} else if payload[i].CurrentRate >= payload[i].MaxTriggerValue {
+		b, err := json.Marshal(webhookPay)
+		if err != nil {
+			fmt.Printf("Json encoding went to shit: %s\n", err)
+			return
+		}
+		SendWebhook(payload[i].WebhookURL, b)
+		/*	} else if payload[i].CurrentRate >= payload[i].MaxTriggerValue {
 			//Send webhook maxtrigger
 			var webhookPay InvokedPayload
 
