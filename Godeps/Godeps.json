@@ -8,7 +8,7 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/JohanAanesen/CloudTech_oblig2/funcs",
-			"Rev": "aa6ab6a5e01ae496925f82df51227f2ad53e2fa0"
+			"Rev": "a78dcab15781b3caff68156c19ecc4b1b363bf96"
 		},
 		{
 			"ImportPath": "gopkg.in/mgo.v2",
