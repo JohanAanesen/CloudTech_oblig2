@@ -21,10 +21,10 @@ func TestSaveData(t *testing.T) {
 	db := DatabaseCon()
 	defer db.Close()
 	c := db.DB("cloudtech2").C("fixer")
-	dbSize, _ := c.Count()
+	//	dbSize, _ := c.Count()
 
 	var testData2 Data
-	c.Find(nil).Skip(dbSize - 1).One(&testData2)
+	c.Find(bson.M{"base": "TEST"}).One(&testData2)
 
 	if testData2.Rates["NOK"] != 1337 {
 		t.Fatalf("ERROR expected: %v but got: %v", testData.Rates["NOK"], testData2.Rates["NOK"])

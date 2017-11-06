@@ -12,9 +12,24 @@ func TestGetFixer(t *testing.T) {
 
 	hour, _, _ := time.Now().Clock()
 	timeTest := time.Now()
+	timeDay := time.Now().Weekday()
 
-	if hour < 17 {
+	if timeDay == 0 {
+		timeTest = timeTest.AddDate(0, 0, -2)
+		if hour < 17 {
+			timeTest = timeTest.AddDate(0, 0, -1)
+		}
+	}
+	if timeDay == 6 {
 		timeTest = timeTest.AddDate(0, 0, -1)
+		if hour < 17 {
+			timeTest = timeTest.AddDate(0, 0, -1)
+		}
+	}
+	if timeDay == 1 {
+		if hour < 17 {
+			timeTest = timeTest.AddDate(0, 0, -3)
+		}
 	}
 	timeTestString := timeTest.Format("2006-01-02")
 

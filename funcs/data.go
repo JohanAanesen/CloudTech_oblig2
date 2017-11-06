@@ -39,5 +39,5 @@ type LatestPayload struct {
 
 //DiscordWrap struct
 type DiscordWrap struct {
-	Content InvokedPayload `json:"content"`
+	Content string `json:"content" bson:"content"`
 }

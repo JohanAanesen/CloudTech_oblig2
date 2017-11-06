@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
-	"net/http"
-	"strings"
 	"io/ioutil"
 	"log"
+	"net/http"
+	"strings"
 )
 
 //HandleMain main function for /
@@ -42,7 +42,6 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not implemented", http.StatusNotImplemented)
 		return
 	}
-
 
 	//payload.CurrentRate, err = getFixer(payload.BaseCurrency, payload.TargetCurrency)
 	payload.CurrentRate = ReadLatest(payload.TargetCurrency)
@@ -164,7 +163,6 @@ func HandleAverage(w http.ResponseWriter, r *http.Request) {
 
 //HandleEvaluation handles evaluation trigger for evaluation purposes
 func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w,"fuck off m8")
 	//	updateCurrencies(w)
 
 	db := DatabaseCon()
@@ -180,15 +178,11 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var url = "https://discordapp.com/api/webhooks/371707670832349187/dPg6uA7eJL1K0wPxtfyde1ZQu_6LoC_O_SOqrQJ5b_VqcxpfsnGHE4TYKrNz95sAXW3o"
-	//Don't send webhook? dunno
-	var jsonStr= []byte(`{"content":"Within margins"}`)
-	SendWebhook(url, jsonStr)
-
+	fmt.Println("payloads: ", payload[0])
+	fmt.Println("count: ", count)
 	for i := 0; i < count; i++ {
 
 		var webhookPay InvokedPayload
-		var wrap DiscordWrap
 
 		webhookPay.BaseCurrency = payload[i].BaseCurrency
 		webhookPay.TargetCurrency = payload[i].TargetCurrency
@@ -196,24 +190,25 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 		webhookPay.MinTriggerValue = payload[i].MinTriggerValue
 		webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
 
-		wrap.Content = webhookPay
-		//b, err := json.Marshal(webhookPay)
-		b, err := json.Marshal(wrap)
-		if err != nil {
-			fmt.Printf("Json encoding went to shit: %s\n", err)
-			return
-		}
-		SendWebhook(payload[i].WebhookURL, b)
+		rate := fmt.Sprint(webhookPay.CurrentRate)
+		min := fmt.Sprint(webhookPay.MinTriggerValue)
+		max := fmt.Sprint(webhookPay.MaxTriggerValue)
+		text := "baseCurrency: " + webhookPay.BaseCurrency + "\ntargetCurrency: " + webhookPay.TargetCurrency + "\ncurrent: " + rate + "\nminTriggerValue: " + min + "\nmaxTriggerValue: " + max
+
+		SendWebhook(payload[i].WebhookURL, text)
 	}
 
-//	w.WriteHeader(http.StatusOK)
+	//	w.WriteHeader(http.StatusOK)
 
 }
 
 //SendWebhook sends the webhook to url with data provided
-func SendWebhook(url string, data []byte) {
+func SendWebhook(url string, data string) {
+	var content DiscordWrap
+	content.Content = data
+	raw, err := json.Marshal(content)
 	//var jsonStr= []byte(`{"content":"shit"}`)
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(raw))
 	//	req, _ := http.Post(url, "application/json", bytes.NewBuffer(jsonStr))
 
 	if err != nil {
@@ -222,7 +217,7 @@ func SendWebhook(url string, data []byte) {
 	}
 
 	log.Println(resp.StatusCode)
-	fmt.Println("fuck you")
+
 }
 
 //UpdateCurrencies updates the currencies to all the registered webhooks and sends webhook if triggered
@@ -267,12 +262,12 @@ func UpdateCurrencies() {
 			webhookPay.MinTriggerValue = payload[i].MinTriggerValue
 			webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
 
-			b, err := json.Marshal(webhookPay)
-			if err != nil {
-				fmt.Printf("Json encoding error: %s\n", err)
-				return
-			}
-			SendWebhook(payload[i].WebhookURL, b)
+			rate := fmt.Sprint(webhookPay.CurrentRate)
+			min := fmt.Sprint(webhookPay.MinTriggerValue)
+			max := fmt.Sprint(webhookPay.MaxTriggerValue)
+			text := "baseCurrency: " + webhookPay.BaseCurrency + "\ntargetCurrency: " + webhookPay.TargetCurrency + "\ncurrent: " + rate + "\nminTriggerValue: " + min + "\nmaxTriggerValue: " + max
+
+			SendWebhook(payload[i].WebhookURL, text)
 		} else if payload[i].CurrentRate >= payload[i].MaxTriggerValue {
 			//Send webhook maxtrigger
 			var webhookPay InvokedPayload
@@ -283,12 +278,12 @@ func UpdateCurrencies() {
 			webhookPay.MinTriggerValue = payload[i].MinTriggerValue
 			webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
 
-			b, err := json.Marshal(webhookPay)
-			if err != nil {
-				fmt.Printf("Json encoding error: %s\n", err)
-				return
-			}
-			SendWebhook(payload[i].WebhookURL, b)
+			rate := fmt.Sprint(webhookPay.CurrentRate)
+			min := fmt.Sprint(webhookPay.MinTriggerValue)
+			max := fmt.Sprint(webhookPay.MaxTriggerValue)
+			text := "baseCurrency: " + webhookPay.BaseCurrency + "\ntargetCurrency: " + webhookPay.TargetCurrency + "\ncurrent: " + rate + "\nminTriggerValue: " + min + "\nmaxTriggerValue: " + max
+
+			SendWebhook(payload[i].WebhookURL, text)
 
 		}
 		//	fmt.Printf("Updated ID: %v\n %s\n", payload[i].ID.Hex(), http.StatusOK)
