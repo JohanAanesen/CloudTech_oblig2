@@ -36,3 +36,8 @@ type LatestPayload struct {
 	BaseCurrency   string `json:"baseCurrency" bson:"baseCurrency"`
 	TargetCurrency string `json:"targetCurrency" bson:"targetCurrency"`
 }
+
+//DiscordWrap struct
+type DiscordWrap struct {
+	Content InvokedPayload `json:"content"`
+}
