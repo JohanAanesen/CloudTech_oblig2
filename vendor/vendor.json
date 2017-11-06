@@ -10,6 +10,24 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "xw9M3o4lts4IcY3DnedA12nJSe8=",
+			"path": "CloudTech_oblig2/cmd/oblig2",
+			"revision": "7e623c5e2340e87ac358fbd6469a01a5912041c2",
+			"revisionTime": "2017-11-06T14:38:57Z"
+		},
+		{
+			"checksumSHA1": "sXHSvLcTKKC8UF4G9OWaWz2rN8Q=",
+			"path": "CloudTech_oblig2/cmd/webhook",
+			"revision": "7e623c5e2340e87ac358fbd6469a01a5912041c2",
+			"revisionTime": "2017-11-06T14:38:57Z"
+		},
+		{
+			"checksumSHA1": "8IS4wteCdtUxALyNfuHPS8O0NuE=",
+			"path": "CloudTech_oblig2/funcs",
+			"revision": "7e623c5e2340e87ac358fbd6469a01a5912041c2",
+			"revisionTime": "2017-11-06T14:38:57Z"
+		},
+		{
 			"checksumSHA1": "YFQU7VULoTU4TwPz3V97b2exyxE=",
 			"path": "gopkg.in/mgo.v2",
 			"revision": "3f83fa5005286a7fe593b055f0d7771a7dce4655",
@@ -40,5 +58,5 @@
 			"revisionTime": "2016-08-18T02:01:20Z"
 		}
 	],
-	"rootPath": "github.com/JohanAanesen/CloudTech_oblig2"
+	"rootPath": "CloudTech_oblig2"
 }
