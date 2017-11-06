@@ -1,8 +1,7 @@
 package main
 
 import (
-	//"github.com/JohanAanesen/CloudTech_oblig2/funcs"
-	"CloudTech_oblig2/funcs"
+	"github.com/JohanAanesen/CloudTech_oblig2/funcs"
 	"net/http"
 )
 
