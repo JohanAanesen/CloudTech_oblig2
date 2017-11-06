@@ -15,11 +15,11 @@ func main() {
 	http.HandleFunc("/latest", funcs.HandleLatest)
 	http.HandleFunc("/average", funcs.HandleAverage)
 	http.HandleFunc("/evaluationtrigger", funcs.HandleEvaluation)
-//	http.HandleFunc("/addlatest", HandleNew)
+	//	http.HandleFunc("/addlatest", HandleNew)
 
 	port := os.Getenv("PORT")
 	http.ListenAndServe(":"+port, nil)
-//	http.ListenAndServe(":8080", nil)
+	//	http.ListenAndServe(":8080", nil)
 }
 
 /*
