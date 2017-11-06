@@ -15,14 +15,34 @@ func main() {
 	http.HandleFunc("/latest", funcs.HandleLatest)
 	http.HandleFunc("/average", funcs.HandleAverage)
 	http.HandleFunc("/evaluationtrigger", funcs.HandleEvaluation)
-	//	http.HandleFunc("/addlatest", HandleNew)
+//	http.HandleFunc("/addlatest", HandleNew)
 
 	port := os.Getenv("PORT")
 	http.ListenAndServe(":"+port, nil)
-	//http.ListenAndServe(":8080", nil)
+//	http.ListenAndServe(":8080", nil)
 }
 
 /*
 func HandleNew(w http.ResponseWriter, r *http.Request) {
-	funcs.GetFixer("EUR")
+
+	json1, err := http.Get("http://api.fixer.io/latest") //+ "," + s2)
+	if err != nil {
+		fmt.Printf("fixer.io is not responding, %s\n", err)
+		return
+	}
+
+	//data object
+	var data funcs.Data
+
+	//json decoder
+	err = json.NewDecoder(json1.Body).Decode(&data)
+	if err != nil { //err handler
+		fmt.Printf("Error: %s\n", err)
+		return
+	}
+
+	//Storing data in db
+	funcs.SaveData(data)
+
+	fmt.Println("ok.")
 }*/

@@ -45,7 +45,7 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 
 	if strings.Contains(payload.WebhookURL, "localhost"){
 		http.Error(w, "URL can't contain localhost", http.StatusBadRequest)
-		return 
+		return
 	}
 
 	//payload.CurrentRate, err = getFixer(payload.BaseCurrency, payload.TargetCurrency)
