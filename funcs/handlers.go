@@ -198,7 +198,7 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 		SendWebhook(payload[i].WebhookURL, text)
 	}
 
-	//	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusOK)
 
 }
 
