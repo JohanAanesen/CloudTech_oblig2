@@ -3,30 +3,12 @@
 	"heroku": {
 		"goVersion": "go1.9",
 		"install": [
-			"./cmd/webhook",
-			"./cmd/oblig2"
+			"./cmd/oblig2",
+			"./cmd/webhook"
 		]
 	},
 	"ignore": "test",
 	"package": [
-		{
-			"checksumSHA1": "xw9M3o4lts4IcY3DnedA12nJSe8=",
-			"path": "CloudTech_oblig2/cmd/oblig2",
-			"revision": "7e623c5e2340e87ac358fbd6469a01a5912041c2",
-			"revisionTime": "2017-11-06T14:38:57Z"
-		},
-		{
-			"checksumSHA1": "sXHSvLcTKKC8UF4G9OWaWz2rN8Q=",
-			"path": "CloudTech_oblig2/cmd/webhook",
-			"revision": "7e623c5e2340e87ac358fbd6469a01a5912041c2",
-			"revisionTime": "2017-11-06T14:38:57Z"
-		},
-		{
-			"checksumSHA1": "8IS4wteCdtUxALyNfuHPS8O0NuE=",
-			"path": "CloudTech_oblig2/funcs",
-			"revision": "7e623c5e2340e87ac358fbd6469a01a5912041c2",
-			"revisionTime": "2017-11-06T14:38:57Z"
-		},
 		{
 			"checksumSHA1": "YFQU7VULoTU4TwPz3V97b2exyxE=",
 			"path": "gopkg.in/mgo.v2",
