@@ -42,6 +42,10 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not implemented", http.StatusNotImplemented)
 		return
 	}
+	if payload.BaseCurrency == "" || payload.TargetCurrency == "" {
+		http.Error(w, "Error", http.StatusBadRequest)
+		return
+	}
 
 	//payload.CurrentRate, err = getFixer(payload.BaseCurrency, payload.TargetCurrency)
 	payload.CurrentRate = ReadLatest(payload.TargetCurrency)
@@ -101,15 +105,16 @@ func HandleDelete(s string, w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := DatabaseCon()
+	defer db.Close()
 
 	err := db.DB("cloudtech2").C("webhooks").RemoveId(bson.ObjectIdHex(s))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	defer db.Close()
 
 	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Entry succesfully deleted")
 }
 
 //HandleLatest handles POST requests to /latest
@@ -198,7 +203,7 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 		SendWebhook(payload[i].WebhookURL, text)
 	}
 
-	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Webhooks sent")
 
 }
 
