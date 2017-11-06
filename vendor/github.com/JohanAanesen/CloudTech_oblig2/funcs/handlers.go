@@ -190,15 +190,14 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 		webhookPay.MinTriggerValue = payload[i].MinTriggerValue
 		webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
 
-		//	b, _ := json.Marshal(webhookPay)
+		b, _ := json.Marshal(webhookPay)
 
-		rate := fmt.Sprint(webhookPay.CurrentRate)
-		min := fmt.Sprint(webhookPay.MinTriggerValue)
-		max := fmt.Sprint(webhookPay.MaxTriggerValue)
-		text := "baseCurrency: " + webhookPay.BaseCurrency + "\ntargetCurrency: " + webhookPay.TargetCurrency + "\ncurrent: " + rate + "\nminTriggerValue: " + min + "\nmaxTriggerValue: " + max
+		//		rate := fmt.Sprint(webhookPay.CurrentRate)
+		//		min := fmt.Sprint(webhookPay.MinTriggerValue)
+		//		max := fmt.Sprint(webhookPay.MaxTriggerValue)
+		//		text := "baseCurrency: " + webhookPay.BaseCurrency + "\ntargetCurrency: " + webhookPay.TargetCurrency + "\ncurrent: " + rate + "\nminTriggerValue: " + min + "\nmaxTriggerValue: " + max
 
-		//	SendWebhook(payload[i].WebhookURL, b)
-		SendWebhook(payload[i].WebhookURL, text)
+		SendWebhook(payload[i].WebhookURL, b)
 	}
 
 	//	w.WriteHeader(http.StatusOK)
@@ -206,12 +205,12 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 }
 
 //SendWebhook sends the webhook to url with data provided
-func SendWebhook(url string, data string) {
-		var content DiscordWrap
-		content.Content = data
-		raw, err := json.Marshal(content)
+func SendWebhook(url string, data []byte) {
+	//	var content DiscordWrap
+	//	content.Content = data
+	//	raw, err := json.Marshal(content)
 	//var jsonStr= []byte(`{"content":"shit"}`)
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(raw))
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
 	//	req, _ := http.Post(url, "application/json", bytes.NewBuffer(jsonStr))
 
 	if err != nil {
@@ -265,15 +264,14 @@ func UpdateCurrencies() {
 			webhookPay.MinTriggerValue = payload[i].MinTriggerValue
 			webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
 
-			//	b, _ := json.Marshal(webhookPay)
+			b, _ := json.Marshal(webhookPay)
 
-			rate := fmt.Sprint(webhookPay.CurrentRate)
-			min := fmt.Sprint(webhookPay.MinTriggerValue)
-			max := fmt.Sprint(webhookPay.MaxTriggerValue)
-			text := "baseCurrency: " + webhookPay.BaseCurrency + "\ntargetCurrency: " + webhookPay.TargetCurrency + "\ncurrent: " + rate + "\nminTriggerValue: " + min + "\nmaxTriggerValue: " + max
+			//		rate := fmt.Sprint(webhookPay.CurrentRate)
+			//		min := fmt.Sprint(webhookPay.MinTriggerValue)
+			//		max := fmt.Sprint(webhookPay.MaxTriggerValue)
+			//		text := "baseCurrency: " + webhookPay.BaseCurrency + "\ntargetCurrency: " + webhookPay.TargetCurrency + "\ncurrent: " + rate + "\nminTriggerValue: " + min + "\nmaxTriggerValue: " + max
 
-			//	SendWebhook(payload[i].WebhookURL, b)
-			SendWebhook(payload[i].WebhookURL, text)
+			SendWebhook(payload[i].WebhookURL, b)
 		} else if payload[i].CurrentRate >= payload[i].MaxTriggerValue {
 			//Send webhook maxtrigger
 			var webhookPay InvokedPayload
@@ -284,15 +282,14 @@ func UpdateCurrencies() {
 			webhookPay.MinTriggerValue = payload[i].MinTriggerValue
 			webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
 
-		//	b, _ := json.Marshal(webhookPay)
+			b, _ := json.Marshal(webhookPay)
 
-					rate := fmt.Sprint(webhookPay.CurrentRate)
-					min := fmt.Sprint(webhookPay.MinTriggerValue)
-					max := fmt.Sprint(webhookPay.MaxTriggerValue)
-					text := "baseCurrency: " + webhookPay.BaseCurrency + "\ntargetCurrency: " + webhookPay.TargetCurrency + "\ncurrent: " + rate + "\nminTriggerValue: " + min + "\nmaxTriggerValue: " + max
+			//		rate := fmt.Sprint(webhookPay.CurrentRate)
+			//		min := fmt.Sprint(webhookPay.MinTriggerValue)
+			//		max := fmt.Sprint(webhookPay.MaxTriggerValue)
+			//		text := "baseCurrency: " + webhookPay.BaseCurrency + "\ntargetCurrency: " + webhookPay.TargetCurrency + "\ncurrent: " + rate + "\nminTriggerValue: " + min + "\nmaxTriggerValue: " + max
 
-		//	SendWebhook(payload[i].WebhookURL, b)
-			SendWebhook(payload[i].WebhookURL, text)
+			SendWebhook(payload[i].WebhookURL, b)
 
 		}
 		//	fmt.Printf("Updated ID: %v\n %s\n", payload[i].ID.Hex(), http.StatusOK)
