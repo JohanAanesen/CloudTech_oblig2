@@ -178,8 +178,6 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("payloads: ", payload[0])
-	fmt.Println("count: ", count)
 	for i := 0; i < count; i++ {
 
 		var webhookPay InvokedPayload

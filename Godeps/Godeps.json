@@ -7,10 +7,6 @@
 	],
 	"Deps": [
 		{
-			"ImportPath": "github.com/JohanAanesen/CloudTech_oblig2/funcs",
-			"Rev": "a6499151c79642e02459e48d72ce93b859c54e82"
-		},
-		{
 			"ImportPath": "gopkg.in/mgo.v2",
 			"Comment": "r2016.08.01-5-g3f83fa5",
 			"Rev": "3f83fa5005286a7fe593b055f0d7771a7dce4655"
@@ -34,26 +30,6 @@
 			"ImportPath": "gopkg.in/mgo.v2/internal/scram",
 			"Comment": "r2016.08.01-5-g3f83fa5",
 			"Rev": "3f83fa5005286a7fe593b055f0d7771a7dce4655"
-		},
-		{
-			"ImportPath": "github.com/JohanAanesen/CloudTech_oblig2/vendor/gopkg.in/mgo.v2",
-			"Rev": "a6499151c79642e02459e48d72ce93b859c54e82"
-		},
-		{
-			"ImportPath": "github.com/JohanAanesen/CloudTech_oblig2/vendor/gopkg.in/mgo.v2/bson",
-			"Rev": "a6499151c79642e02459e48d72ce93b859c54e82"
-		},
-		{
-			"ImportPath": "github.com/JohanAanesen/CloudTech_oblig2/vendor/gopkg.in/mgo.v2/internal/sasl",
-			"Rev": "a6499151c79642e02459e48d72ce93b859c54e82"
-		},
-		{
-			"ImportPath": "github.com/JohanAanesen/CloudTech_oblig2/vendor/gopkg.in/mgo.v2/internal/scram",
-			"Rev": "a6499151c79642e02459e48d72ce93b859c54e82"
-		},
-		{
-			"ImportPath": "github.com/JohanAanesen/CloudTech_oblig2/vendor/gopkg.in/mgo.v2/internal/json",
-			"Rev": "a6499151c79642e02459e48d72ce93b859c54e82"
 		}
 	]
 }
