@@ -1,7 +1,7 @@
 package main
 
 import (
-	"CloudTech_oblig2/funcs"
+	"github.com/JohanAanesen/CloudTech_oblig2/funcs"
 )
 
 func main() {
