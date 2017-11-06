@@ -204,9 +204,9 @@ func HandleEvaluation(w http.ResponseWriter, r *http.Request) {
 
 //SendWebhook sends the webhook to url with data provided
 func SendWebhook(url string, data string) {
-		var content DiscordWrap
-		content.Content = data
-		raw, err := json.Marshal(content)
+	var content DiscordWrap
+	content.Content = data
+	raw, err := json.Marshal(content)
 	//var jsonStr= []byte(`{"content":"shit"}`)
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(raw))
 	//	req, _ := http.Post(url, "application/json", bytes.NewBuffer(jsonStr))
@@ -280,7 +280,7 @@ func UpdateCurrencies() {
 			webhookPay.MinTriggerValue = payload[i].MinTriggerValue
 			webhookPay.MaxTriggerValue = payload[i].MaxTriggerValue
 
-		//	b, _ := json.Marshal(webhookPay)
+			//	b, _ := json.Marshal(webhookPay)
 
 			rate := fmt.Sprint(webhookPay.CurrentRate)
 			min := fmt.Sprint(webhookPay.MinTriggerValue)
