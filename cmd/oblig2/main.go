@@ -3,7 +3,6 @@ package main
 import (
 	"CloudTech_oblig2/funcs"
 	"net/http"
-	"os"
 )
 
 //Discord webhook
@@ -17,9 +16,9 @@ func main() {
 	http.HandleFunc("/evaluationtrigger", funcs.HandleEvaluation)
 	//	http.HandleFunc("/addlatest", HandleNew)
 
-	port := os.Getenv("PORT")
-	http.ListenAndServe(":"+port, nil)
-	//http.ListenAndServe(":8080", nil)
+	//port := os.Getenv("PORT")
+	//http.ListenAndServe(":"+port, nil)
+	http.ListenAndServe(":8080", nil)
 }
 
 /*
