@@ -1,11 +1,8 @@
 package funcs
 
-import (
-	"gopkg.in/mgo.v2/bson"
-	"testing"
-	"time"
-)
+import ()
 
+/*
 func TestGetFixer(t *testing.T) {
 
 	GetFixer("EUR")
@@ -29,6 +26,12 @@ func TestGetFixer(t *testing.T) {
 	if timeDay == 1 {
 		if hour < 17 {
 			timeTest = timeTest.AddDate(0, 0, -3)
+		}
+	}
+
+	if timeDay == 2 || timeDay == 3 || timeDay == 4 || timeDay == 5 {
+		if hour < 17 {
+			timeTest = timeTest.AddDate(0, 0, -1)
 		}
 	}
 	timeTestString := timeTest.Format("2006-01-02")
@@ -55,7 +58,7 @@ func TestGetFixer(t *testing.T) {
 	//remove what got added to db
 	c.Remove(bson.M{"date": timeTestString})
 
-}
+}*/
 
 /*
 func TestGetFixerAverage(t *testing.T) {
