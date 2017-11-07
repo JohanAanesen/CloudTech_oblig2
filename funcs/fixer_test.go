@@ -1,7 +1,5 @@
 package funcs
 
-import ()
-
 /*
 func TestGetFixer(t *testing.T) {
 
